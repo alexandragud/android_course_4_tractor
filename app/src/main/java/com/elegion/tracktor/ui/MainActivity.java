@@ -1,6 +1,7 @@
 package com.elegion.tracktor.ui;
 
 import android.Manifest;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,31 +15,66 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.elegion.tracktor.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener {
+public class MainActivity extends AppCompatActivity implements
+        GoogleMap.OnMyLocationButtonClickListener, GoogleMap.OnMyLocationClickListener, OnMapReadyCallback {
 
     public static final int LOCATION_REQUEST_CODE = 99;
+    public static final int UPDATE_INTERVAL = 5000;
+    public static final int UPDATE_FASTEST_INTERVAL = 2000;
+    public static final int UPDATE_MIN_DISTANCE = 10;
+    public static final int DEFAULT_ZOOM = 15;
+
 
     @BindView(R.id.counterContainer)
     FrameLayout counterContainer;
 
     private GoogleMap mMap;
+    private FusedLocationProviderClient mLocationProviderClient;
+    private LocationRequest mLocationRequest = new LocationRequest();
+    private LocationCallback mLocationCallback = new LocationCallback(){
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            if (locationResult!=null){
+                if (mMap!=null){
+                    mMap.clear();
+                    Location lastLocation = locationResult.getLastLocation();
+                    LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                    mMap.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title("Текущее местоположение"));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, DEFAULT_ZOOM));
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        mLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(UPDATE_FASTEST_INTERVAL);
+        mLocationRequest.setSmallestDisplacement(UPDATE_MIN_DISTANCE);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (savedInstanceState == null) {
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
@@ -76,7 +112,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void initMap() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
+            mMap.setOnMyLocationClickListener(this);
+            mLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
         } else {
             new AlertDialog.Builder(this)
                     .setTitle("Запрос разрешений на получение местоположения")
@@ -111,5 +150,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onMyLocationButtonClick() {
         return false;
+    }
+
+    @Override
+    public void onMyLocationClick(@NonNull Location location) {
     }
 }
