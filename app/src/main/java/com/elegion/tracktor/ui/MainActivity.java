@@ -14,18 +14,24 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.elegion.tracktor.R;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMyLocationButtonClickListener {
 
     public static final int LOCATION_REQUEST_CODE = 99;
 
     @BindView(R.id.counterContainer)
     FrameLayout counterContainer;
+
+    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (savedInstanceState == null) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.setRetainInstance(true);
+            mapFragment.getMapAsync(this);
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.counterContainer, new CounterFragment())
@@ -65,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void initMap() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
-            Toast.makeText(this, "Разрешения получены!", Toast.LENGTH_SHORT).show();
+            mMap.setMyLocationEnabled(true);
+            mMap.setOnMyLocationButtonClickListener(this);
         } else {
             new AlertDialog.Builder(this)
                     .setTitle("Запрос разрешений на получение местоположения")
@@ -88,5 +99,17 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Вы не дали разрешения!", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        initMap();
+    }
+
+    @Override
+    public boolean onMyLocationButtonClick() {
+        return false;
     }
 }
