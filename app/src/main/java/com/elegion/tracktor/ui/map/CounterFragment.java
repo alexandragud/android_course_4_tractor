@@ -1,4 +1,4 @@
-package com.elegion.tracktor.ui;
+package com.elegion.tracktor.ui.map;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -37,6 +37,7 @@ public class CounterFragment extends Fragment {
         mViewModel.getStartEnabled().observe(this, buttonStart::setEnabled);
         mViewModel.getStopEnabled().observe(this, buttonStop::setEnabled);
         mViewModel.getTimeText().observe(this, s->tvTime.setText(s));
+        mViewModel.getDistanceText().observe(this, s -> tvDistance.setText(s));
         return view;
     }
 
