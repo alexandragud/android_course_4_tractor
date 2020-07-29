@@ -15,6 +15,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.elegion.tracktor.R;
+import com.elegion.tracktor.event.StartRouteEvent;
+import com.elegion.tracktor.event.StopRouteEvent;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -26,6 +28,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,18 +58,20 @@ public class MainActivity extends AppCompatActivity implements
     private FusedLocationProviderClient mLocationProviderClient;
     private LocationRequest mLocationRequest = new LocationRequest();
     private Location mLastLocation;
+    private boolean isRouteStarted;
+    private List<LatLng> mRoute = new ArrayList<>();
     private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             if (locationResult != null && mMap != null) {
-                if (mLastLocation!=null) {
+                if (mLastLocation!=null && isRouteStarted) {
                     Location newLocation = locationResult.getLastLocation();
+                    LatLng newPosition = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
                     mMap.addPolyline(new PolylineOptions().add(
                             new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()),
-                            new LatLng(newLocation.getLatitude(), newLocation.getLongitude())
-                    ));
+                            newPosition));
+                    mRoute.add(newPosition);
                 }
-               // mMap.clear(); todo move t route event
                 mLastLocation = locationResult.getLastLocation();
                 LatLng position = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, DEFAULT_ZOOM));
@@ -110,6 +121,31 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        EventBus.getDefault().register(this);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRoadStart(StartRouteEvent event){
+        mMap.clear();
+        mRoute.clear();
+        isRouteStarted = true;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRoadStop(StopRouteEvent event){
+        isRouteStarted = false;
+        Toast.makeText(this, "Ваш маршрут будет сохранен", Toast.LENGTH_SHORT).show();
     }
 
     private void initMap() {
