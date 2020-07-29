@@ -25,7 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,19 +48,22 @@ public class MainActivity extends AppCompatActivity implements
     private GoogleMap mMap;
     private FusedLocationProviderClient mLocationProviderClient;
     private LocationRequest mLocationRequest = new LocationRequest();
-    private LocationCallback mLocationCallback = new LocationCallback(){
+    private Location mLastLocation;
+    private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            if (locationResult!=null){
-                if (mMap!=null){
-                    mMap.clear();
-                    Location lastLocation = locationResult.getLastLocation();
-                    LatLng position = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-                    mMap.addMarker(new MarkerOptions()
-                    .position(position)
-                    .title("Текущее местоположение"));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, DEFAULT_ZOOM));
+            if (locationResult != null && mMap != null) {
+                if (mLastLocation!=null) {
+                    Location newLocation = locationResult.getLastLocation();
+                    mMap.addPolyline(new PolylineOptions().add(
+                            new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()),
+                            new LatLng(newLocation.getLatitude(), newLocation.getLongitude())
+                    ));
                 }
+               // mMap.clear(); todo move t route event
+                mLastLocation = locationResult.getLastLocation();
+                LatLng position = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, DEFAULT_ZOOM));
             }
         }
     };
@@ -113,6 +116,8 @@ public class MainActivity extends AppCompatActivity implements
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.getUiSettings().setZoomGesturesEnabled(true);
+            mMap.getUiSettings().setZoomControlsEnabled(true);
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
             mLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
