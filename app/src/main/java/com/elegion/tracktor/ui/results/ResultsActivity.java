@@ -2,25 +2,24 @@ package com.elegion.tracktor.ui.results;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.elegion.tracktor.common.SingleFragmentActivity;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.ArrayList;
+import com.elegion.tracktor.util.ScreenshotMaker;
 
 public class ResultsActivity extends SingleFragmentActivity {
     public static final String DISTANCE_KEY = "DISTANCE_KEY";
     public static final String TIME_KEY = "TIME_KEY";
-    public static final String ROUTE_KEY = "ROUTE_KEY";
+    public static final String SCREENSHOT_KEY = "SCREENSHOT_KEY";
 
-    public static void start(@NonNull Context context, double distance, long time, ArrayList<LatLng> route) {
+    public static void start(@NonNull Context context, double distance, long time, Bitmap screenshot) {
         Intent intent = new Intent(context, ResultsActivity.class);
         intent.putExtra(DISTANCE_KEY, distance);
         intent.putExtra(TIME_KEY, time);
-        intent.putExtra(ROUTE_KEY, route);
+        intent.putExtra(SCREENSHOT_KEY, ScreenshotMaker.toBase64(screenshot));
         context.startActivity(intent);
     }
 

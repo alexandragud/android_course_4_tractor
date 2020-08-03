@@ -25,11 +25,13 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -37,7 +39,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -63,19 +64,17 @@ public class MainActivity extends AppCompatActivity implements
     private LocationRequest mLocationRequest = new LocationRequest();
     private Location mLastLocation;
     private boolean isRouteStarted;
-    private List<LatLng> mRoute = new ArrayList<>();
     private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             if (locationResult != null && mMap != null) {
                 Location newLocation = locationResult.getLastLocation();
                 LatLng newPosition = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
-                if (mLastLocation!=null && isRouteStarted) {
+                if (mLastLocation != null && isRouteStarted) {
                     EventBus.getDefault().post(new AddPositionToRouteEvent(newPosition));
                     LatLng lastPosition = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     mMap.addPolyline(new PolylineOptions().add(lastPosition, newPosition));
-                    mRoute.add(newPosition);
-                } else if (!isRouteStarted){
+                } else if (!isRouteStarted) {
                     EventBus.getDefault().post(new SetStartPositionToRouteEvent(newPosition));
                 }
                 mLastLocation = locationResult.getLastLocation();
@@ -142,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRoadStart(StartRouteEvent event){
+    public void onRoadStart(StartRouteEvent event) {
         mMap.clear();
         LatLng startPosition = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         mMap.addMarker(new MarkerOptions().position(startPosition).title(getString(R.string.begin)));
@@ -150,13 +149,25 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRoadStop(StopRouteEvent event){
+    public void onRoadStop(StopRouteEvent event) {
         isRouteStarted = false;
         List<LatLng> route = event.getRoute();
-        mMap.addMarker(new MarkerOptions().position(route.get(route.size()-1)).title(getString(R.string.end)));
+        mMap.addMarker(new MarkerOptions().position(route.get(route.size() - 1)).title(getString(R.string.end)));
+        takeScreenshot(route, bitmap -> {
+            ResultsActivity.start(this, event.getDistance(), event.getTime(), bitmap);
+        });
 
-        Toast.makeText(this, "Ваш маршрут будет сохранен", Toast.LENGTH_SHORT).show();
-        ResultsActivity.start(this, event.getDistance(), event.getTime(), event.getRoute());
+    }
+
+    private void takeScreenshot(List<LatLng> route, GoogleMap.SnapshotReadyCallback snapshotReadyCallback) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (LatLng point : route) {
+            builder.include(point);
+        }
+        int padding = 100;
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(), padding);
+        mMap.moveCamera(cu);
+        mMap.snapshot(snapshotReadyCallback);
     }
 
     private void initMap() {
