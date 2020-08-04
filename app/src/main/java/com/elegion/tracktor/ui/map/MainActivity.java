@@ -117,8 +117,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_LOCATION_STORAGE) {
-            if (permissions.length == 1 &&
-                    permissions[0].equalsIgnoreCase(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            if (permissions[0].equalsIgnoreCase(Manifest.permission.ACCESS_FINE_LOCATION) &&
                     grantResults[0] == PERMISSION_DENIED) {
                 Toast.makeText(this, R.string.back_off, Toast.LENGTH_LONG).show();
                 finish();
