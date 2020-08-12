@@ -2,10 +2,14 @@ package com.elegion.tracktor;
 
 import android.app.Application;
 
-import toothpick.Scope;
-import toothpick.Toothpick;
-import toothpick.configuration.Configuration;
+import io.realm.Realm;
 
 public class App extends Application {
 
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Realm.init(this);
+    }
 }
