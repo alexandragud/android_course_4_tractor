@@ -71,6 +71,8 @@ dependencies {
     // optional - ReactiveStreams support for LiveData
     implementation "androidx.lifecycle:lifecycle-reactivestreams:$lifecycle_version"
 
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+
 
 
 }

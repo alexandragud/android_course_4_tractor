@@ -24,7 +24,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     protected abstract Fragment getFragment();
 
-    private void changeFragment(@NonNull Fragment fragment){
+    protected void changeFragment(@NonNull Fragment fragment){
         boolean shouldAddToBackStack = getSupportFragmentManager().findFragmentById(R.id.container)!=null;
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment);

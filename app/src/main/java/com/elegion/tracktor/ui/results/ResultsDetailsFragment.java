@@ -36,6 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.elegion.tracktor.ui.results.ResultsActivity.RESULT_KEY;
 
 public class ResultsDetailsFragment extends Fragment {
 
@@ -47,8 +48,12 @@ public class ResultsDetailsFragment extends Fragment {
     ImageView mScreenshotImage;
 
     private Bitmap mImage;
+    private RealmRepository mRealmRepository;
+    private long mTrackId;
 
-    public static ResultsDetailsFragment newInstance(Bundle bundle) {
+    public static ResultsDetailsFragment newInstance(long trackId) {
+        Bundle bundle = new Bundle();
+        bundle.putLong(RESULT_KEY, trackId);
         ResultsDetailsFragment fragment = new ResultsDetailsFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -65,9 +70,9 @@ public class ResultsDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        long id = getArguments().getLong(ResultsActivity.RESULT_KEY, 0);
-        RealmRepository realmRepository = new RealmRepository();
-        Track track = realmRepository.getItem(id);
+        mTrackId = getArguments().getLong(ResultsActivity.RESULT_KEY, 0);
+        mRealmRepository = new RealmRepository();
+        Track track = mRealmRepository.getItem(mTrackId);
         String distance = StringUtil.getDistanceText(track.getDistance());
         String time = StringUtil.getTimeText(track.getDuration());
         mImage = ScreenshotMaker.fromBase64(track.getImageBase64());
@@ -106,9 +111,15 @@ public class ResultsDetailsFragment extends Fragment {
                 intent.putExtra(Intent.EXTRA_STREAM, uri);
                 intent.putExtra(Intent.EXTRA_TEXT, "Время: " + mTimeText.getText() + "\nРасстояние: " + mDistanceText.getText());
                 startActivity(Intent.createChooser(intent, "Результаты маршрута"));
+                return true;
             }else{
                 Toast.makeText(getContext(), R.string.permissions_denied, Toast.LENGTH_SHORT).show();
             }
+        }else if (item.getItemId()==R.id.actionDelete){
+            if (mRealmRepository.deleteItem(mTrackId)){
+                getActivity().onBackPressed();
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

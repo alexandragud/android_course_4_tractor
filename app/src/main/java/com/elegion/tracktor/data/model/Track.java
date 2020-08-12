@@ -1,6 +1,7 @@
 package com.elegion.tracktor.data.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -67,5 +68,23 @@ public class Track extends RealmObject {
 
     public void setLocations(RealmList<Location> locations) {
         mLocations = locations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Track track = (Track) o;
+        return mId == track.mId &&
+                mDuration == track.mDuration &&
+                Objects.equals(mDate, track.mDate) &&
+                Objects.equals(mDistance, track.mDistance) &&
+                Objects.equals(mImageBase64, track.mImageBase64) &&
+                Objects.equals(mLocations, track.mLocations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId, mDate, mDuration, mDistance, mImageBase64, mLocations);
     }
 }
