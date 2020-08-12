@@ -17,6 +17,7 @@ import com.elegion.tracktor.event.StartTrackEvent;
 import com.elegion.tracktor.event.StopTrackEvent;
 import com.elegion.tracktor.event.UpdateRouteEvent;
 import com.elegion.tracktor.ui.results.ResultsActivity;
+import com.elegion.tracktor.util.ScreenshotMaker;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -140,11 +141,11 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
         } else {
             addMarker(route.get(route.size() - 1), getString(R.string.end));
 
-            takeMapScreenshot(route, bitmap ->
-                    ResultsActivity.start(getContext(),
-                            mMainViewModel.getDistanceText().getValue(),
-                            mMainViewModel.getTimeText().getValue(),
-                            bitmap));
+            takeMapScreenshot(route, bitmap ->{
+                        String base64image = ScreenshotMaker.toBase64(bitmap);
+                        long resultId = mMainViewModel.saveResults(base64image);
+                        ResultsActivity.start(getContext(),resultId);
+                    });
         }
     }
 

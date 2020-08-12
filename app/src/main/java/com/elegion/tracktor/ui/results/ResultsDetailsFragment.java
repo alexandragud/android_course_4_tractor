@@ -23,7 +23,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.elegion.tracktor.R;
+import com.elegion.tracktor.data.RealmRepository;
+import com.elegion.tracktor.data.model.Track;
 import com.elegion.tracktor.util.ScreenshotMaker;
+import com.elegion.tracktor.util.StringUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,10 +65,12 @@ public class ResultsDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        String distance = getArguments().getString(ResultsActivity.DISTANCE_KEY, null);
-        String time = getArguments().getString(ResultsActivity.TIME_KEY, null);
-       // mImage = ScreenshotMaker.fromBase64(getArguments().getString(ResultsActivity.SCREENSHOT_KEY));
-        mImage = loadImageFromStorage(getArguments().getString(ResultsActivity.SCREENSHOT_KEY));
+        long id = getArguments().getLong(ResultsActivity.RESULT_KEY, 0);
+        RealmRepository realmRepository = new RealmRepository();
+        Track track = realmRepository.getItem(id);
+        String distance = StringUtil.getDistanceText(track.getDistance());
+        String time = StringUtil.getTimeText(track.getDuration());
+        mImage = ScreenshotMaker.fromBase64(track.getImageBase64());
         mTimeText.setText(time);
         mDistanceText.setText(distance);
         mScreenshotImage.setImageBitmap(mImage);

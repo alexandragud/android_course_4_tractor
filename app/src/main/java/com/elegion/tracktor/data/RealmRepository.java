@@ -2,6 +2,7 @@ package com.elegion.tracktor.data;
 
 import com.elegion.tracktor.data.model.Track;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -63,5 +64,15 @@ public class RealmRepository implements IRepository<Track> {
         mRealm.beginTransaction();
         mRealm.copyToRealmOrUpdate(track);
         mRealm.commitTransaction();
+    }
+
+    public long createAndInsertTrackFrom(long duration, double distance, String base64image) {
+        Track track = new Track();
+        track.setDistance(distance);
+        track.setDuration(duration);
+        track.setImageBase64(base64image);
+        track.setDate(new Date());
+
+        return insertItem(track);
     }
 }

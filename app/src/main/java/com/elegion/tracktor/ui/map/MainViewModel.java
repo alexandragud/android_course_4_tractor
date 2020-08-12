@@ -3,6 +3,7 @@ package com.elegion.tracktor.ui.map;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.elegion.tracktor.data.RealmRepository;
 import com.elegion.tracktor.event.AddPositionToRouteEvent;
 import com.elegion.tracktor.event.UpdateRouteEvent;
 import com.elegion.tracktor.event.UpdateTimerEvent;
@@ -19,10 +20,15 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<String> mTimeText = new MutableLiveData<>();
     private MutableLiveData<String> mDistanceText = new MutableLiveData<>();
 
+    private RealmRepository mRealmRepository;
+    private long duration;
+    private double distance;
+
     public MainViewModel(){
         EventBus.getDefault().register(this);
         startEnabled.setValue(true);
         stopEnabled.setValue(false);
+        mRealmRepository = new RealmRepository();
     }
 
     public void switchButtons() {
@@ -34,18 +40,22 @@ public class MainViewModel extends ViewModel {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateTimer(UpdateTimerEvent event){
         mTimeText.postValue(StringUtil.getTimeText(event.getSeconds()));
+        duration = event.getSeconds();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void OnUpdateRoute (UpdateRouteEvent event){
-        mDistanceText.postValue(StringUtil.getDistanceText(event.getDistance()));
+        distance = event.getDistance();
+        mDistanceText.postValue(StringUtil.getDistanceText(distance));
         startEnabled.postValue(false);
         stopEnabled.postValue(true);
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddPositionToRoute(AddPositionToRouteEvent event){
-        mDistanceText.postValue(StringUtil.getDistanceText(event.getDistance()));
+        distance = event.getDistance();
+        mDistanceText.postValue(StringUtil.getDistanceText(distance));
     }
 
     public MutableLiveData<Boolean> getStartEnabled() {
@@ -73,5 +83,9 @@ public class MainViewModel extends ViewModel {
     public void clear(){
         mTimeText.setValue("");
         mDistanceText.setValue("");
+    }
+
+    public long saveResults(String base64image) {
+        return mRealmRepository.createAndInsertTrackFrom(duration, distance, base64image);
     }
 }
