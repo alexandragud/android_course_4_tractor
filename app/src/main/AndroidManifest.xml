@@ -27,6 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.results.ResultsActivity"/>
+        <activity android:name=".ui.preferences.PreferenceActivity" />
 
         <service android:name=".service.CounterService" android:enabled="true" android:exported="false"/>
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
