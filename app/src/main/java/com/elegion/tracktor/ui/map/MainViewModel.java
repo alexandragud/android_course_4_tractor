@@ -44,7 +44,7 @@ public class MainViewModel extends ViewModel {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void OnUpdateRoute (UpdateRouteEvent event){
+    public void onUpdateRoute(UpdateRouteEvent event){
         distance = event.getDistance();
         mDistanceText.postValue(StringUtil.getDistanceText(distance));
         startEnabled.postValue(false);

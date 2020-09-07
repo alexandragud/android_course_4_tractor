@@ -3,7 +3,6 @@ package com.elegion.tracktor.data.model;
 import java.util.Date;
 import java.util.Objects;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -19,8 +18,6 @@ public class Track extends RealmObject {
     private Double mDistance;
 
     private String mImageBase64;
-
-    private RealmList<Location> mLocations;
 
     public long getId() {
         return mId;
@@ -62,14 +59,6 @@ public class Track extends RealmObject {
         mImageBase64 = imageBase64;
     }
 
-    public RealmList<Location> getLocations() {
-        return mLocations;
-    }
-
-    public void setLocations(RealmList<Location> locations) {
-        mLocations = locations;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -79,12 +68,11 @@ public class Track extends RealmObject {
                 mDuration == track.mDuration &&
                 Objects.equals(mDate, track.mDate) &&
                 Objects.equals(mDistance, track.mDistance) &&
-                Objects.equals(mImageBase64, track.mImageBase64) &&
-                Objects.equals(mLocations, track.mLocations);
+                Objects.equals(mImageBase64, track.mImageBase64) ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mDate, mDuration, mDistance, mImageBase64, mLocations);
+        return Objects.hash(mId, mDate, mDuration, mDistance, mImageBase64);
     }
 }
