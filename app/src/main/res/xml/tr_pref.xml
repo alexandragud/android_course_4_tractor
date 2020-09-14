@@ -5,7 +5,7 @@
     <ListPreference
         android:dialogTitle="@string/dialog_title_distance_unit"
         android:entries="@array/entries_list_preference_unit"
-        android:entryValues="@array/entryvalues_list_preference_shutdown"
+        android:entryValues="@array/entryvalues_list_preference_unit"
         android:key="@string/pref_key_unit"
         android:title="@string/title_distance_unit"
         android:defaultValue="@string/pref_default_value_unit"/>
