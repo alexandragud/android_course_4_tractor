@@ -36,4 +36,10 @@ public class ResultHolder extends RecyclerView.ViewHolder {
             }
         });
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " '" + mDistanceText.getText() + "'";
+    }
+
 }

@@ -81,19 +81,6 @@ public class ResultsDetailsFragment extends Fragment {
         mScreenshotImage.setImageBitmap(mImage);
     }
 
-    private Bitmap loadImageFromStorage(String path) {
-        try {
-            File f=new File(path);
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-            f.delete();
-            return b;
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_details_fragment, menu);

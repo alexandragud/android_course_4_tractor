@@ -21,8 +21,8 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<String> mDistanceText = new MutableLiveData<>();
 
     private RealmRepository mRealmRepository;
-    private long duration;
-    private double distance;
+    private long mDurationRaw;
+    private double mDistanceRaw;
 
     public MainViewModel(){
         EventBus.getDefault().register(this);
@@ -40,13 +40,15 @@ public class MainViewModel extends ViewModel {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateTimer(UpdateTimerEvent event){
         mTimeText.postValue(StringUtil.getTimeText(event.getSeconds()));
-        duration = event.getSeconds();
+        mDistanceText.postValue(StringUtil.getDistanceText(event.getDistance()));
+        mDurationRaw = event.getSeconds();
+        mDistanceRaw = event.getDistance();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateRoute(UpdateRouteEvent event){
-        distance = event.getDistance();
-        mDistanceText.postValue(StringUtil.getDistanceText(distance));
+        mDistanceRaw = event.getDistance();
+        mDistanceText.postValue(StringUtil.getDistanceText(mDistanceRaw));
         startEnabled.postValue(false);
         stopEnabled.postValue(true);
 
@@ -54,8 +56,7 @@ public class MainViewModel extends ViewModel {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddPositionToRoute(AddPositionToRouteEvent event){
-        distance = event.getDistance();
-        mDistanceText.postValue(StringUtil.getDistanceText(distance));
+        mDistanceText.postValue(StringUtil.getDistanceText(event.getDistance()));
     }
 
     public MutableLiveData<Boolean> getStartEnabled() {
@@ -86,6 +87,6 @@ public class MainViewModel extends ViewModel {
     }
 
     public long saveResults(String base64image) {
-        return mRealmRepository.createAndInsertTrackFrom(duration, distance, base64image);
+        return mRealmRepository.createAndInsertTrackFrom(mDurationRaw, mDistanceRaw, base64image);
     }
 }
