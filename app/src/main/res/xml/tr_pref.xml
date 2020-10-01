@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/title_activity_preference">
+
+    <ListPreference
+        android:dialogTitle="@string/dialog_title_distance_unit"
+        android:entries="@array/entries_list_preference_unit"
+        android:entryValues="@array/entryvalues_list_preference_shutdown"
+        android:key="@string/pref_key_unit"
+        android:title="@string/title_distance_unit"
+        android:defaultValue="@string/pref_default_value_unit"/>
+
+    <ListPreference
+        android:dialogTitle="@string/dialog_title_auto_shutdown"
+        android:entries="@array/entries_list_preference_shutdown"
+        android:entryValues="@array/entryvalues_list_preference_shutdown"
+        android:key="@string/pref_key_shutdown"
+        android:title="@string/title_auto_shutdown"
+        android:defaultValue="@string/pref_default_value_shutdown"/>
+
+    <EditTextPreference
+        android:dialogTitle="@string/dialog_title_user_weight"
+        android:key="@string/pref_key_weight"
+        android:title="@string/title_user_weight"
+        android:defaultValue="@string/pref_default_value_weight"
+        android:inputType="numberDecimal"
+        android:lines="1"
+        android:digits="0123456789"/>
+
+</PreferenceScreen>

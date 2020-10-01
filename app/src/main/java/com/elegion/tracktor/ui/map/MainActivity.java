@@ -2,6 +2,7 @@ package com.elegion.tracktor.ui.map;
 
 import android.Manifest;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -18,6 +20,7 @@ import com.elegion.tracktor.R;
 import com.elegion.tracktor.event.StartBtnClickedEvent;
 import com.elegion.tracktor.event.StopBtnClickedEvent;
 import com.elegion.tracktor.service.CounterService;
+import com.elegion.tracktor.ui.preferences.PreferenceActivity;
 import com.elegion.tracktor.ui.results.ResultsActivity;
 
 import org.greenrobot.eventbus.EventBus;
@@ -54,15 +57,26 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.actionSettings:
-                //todo
-                break;
+                PreferenceActivity.start(this);
+                return true;
             case R.id.actionStatistic:
                 ResultsActivity.start(this, ResultsActivity.LIST_ID);
-                break;
+                return true;
+            case R.id.actionAbout:
+                launchAboutScreen();
+                return true;
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    private void launchAboutScreen() {
+        CustomTabsIntent intent = new CustomTabsIntent.Builder()
+                .setToolbarColor(ContextCompat.getColor(this,R.color.colorPrimary))
+                .setShowTitle(true)
+                .enableUrlBarHiding()
+                .build();
+        intent.launchUrl(this, Uri.parse("https://www.e-legion.com"));
     }
 
     @Override
