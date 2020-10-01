@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
@@ -18,11 +19,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.elegion.tracktor.R;
 import com.elegion.tracktor.event.AddPositionToRouteEvent;
 import com.elegion.tracktor.event.GetRouteEvent;
 import com.elegion.tracktor.event.StartTrackEvent;
+import com.elegion.tracktor.event.StopBtnClickedEvent;
 import com.elegion.tracktor.event.StopTrackEvent;
 import com.elegion.tracktor.event.UpdateRouteEvent;
 import com.elegion.tracktor.event.UpdateTimerEvent;
@@ -66,6 +69,7 @@ public class CounterService extends Service {
     private List<LatLng> mRoute = new ArrayList<>();
     private Location mLastLocation;
     private LatLng mLastPosition;
+    private Long mShutdownDuration;
 
     private NotificationCompat.Builder mNotificationBuilder;
     private NotificationManager mNotificationManager;
@@ -124,6 +128,8 @@ public class CounterService extends Service {
             mLocationProviderClient.requestLocationUpdates(locationRequest, mLocationCallback, null);
             startTimer();
 
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            mShutdownDuration = Long.valueOf(preferences.getString(getString(R.string.pref_key_shutdown), "-1"));
         } else {
             Toast.makeText(this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
         }
@@ -140,6 +146,10 @@ public class CounterService extends Service {
         EventBus.getDefault().post(new UpdateTimerEvent(totalSeconds));
         Notification notification = buildNotification(StringUtil.getTimeText(totalSeconds), StringUtil.getDistanceText(mDistance));
         mNotificationManager.notify(NOTIFICATION_ID, notification);
+
+        if (mShutdownDuration!=-1 && totalSeconds==mShutdownDuration){
+            EventBus.getDefault().post(new StopBtnClickedEvent());
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
