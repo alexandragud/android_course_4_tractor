@@ -1,9 +1,9 @@
 package com.elegion.tracktor.ui.results;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,18 +22,16 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.elegion.tracktor.App;
 import com.elegion.tracktor.R;
-import com.elegion.tracktor.data.RealmRepository;
-import com.elegion.tracktor.data.model.Track;
-import com.elegion.tracktor.util.ScreenshotMaker;
-import com.elegion.tracktor.util.StringUtil;
+import com.elegion.tracktor.di.ViewModelModule;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.elegion.tracktor.ui.results.ResultsActivity.RESULT_KEY;
@@ -48,8 +46,8 @@ public class ResultsDetailsFragment extends Fragment {
     ImageView mScreenshotImage;
 
     private Bitmap mImage;
-    private RealmRepository mRealmRepository;
-    private long mTrackId;
+    @Inject
+    ResultsViewModel mViewModel;
 
     public static ResultsDetailsFragment newInstance(long trackId) {
         Bundle bundle = new Bundle();
@@ -57,6 +55,14 @@ public class ResultsDetailsFragment extends Fragment {
         ResultsDetailsFragment fragment = new ResultsDetailsFragment();
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Scope scope = Toothpick.openScopes(App.class, ResultsDetailsFragment.class)
+                .installModules(new ViewModelModule(this));
+        Toothpick.inject(this, scope);
     }
 
     @Nullable
@@ -70,15 +76,13 @@ public class ResultsDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        mTrackId = getArguments().getLong(ResultsActivity.RESULT_KEY, 0);
-        mRealmRepository = new RealmRepository();
-        Track track = mRealmRepository.getItem(mTrackId);
-        String distance = StringUtil.getDistanceText(track.getDistance());
-        String time = StringUtil.getTimeText(track.getDuration());
-        mImage = ScreenshotMaker.fromBase64(track.getImageBase64());
-        mTimeText.setText(time);
-        mDistanceText.setText(distance);
-        mScreenshotImage.setImageBitmap(mImage);
+        mViewModel.selectTrack(getArguments().getLong(ResultsActivity.RESULT_KEY, 0));
+        mViewModel.getSelectedDistanceText().observe(getViewLifecycleOwner(), s -> mDistanceText.setText(s));
+        mViewModel.getSelectedTimeText().observe(getViewLifecycleOwner(), s -> mTimeText.setText(s));
+        mViewModel.getSelectedImage().observe(getViewLifecycleOwner(), b -> {
+            mImage = b;
+            mScreenshotImage.setImageBitmap(b);});
+        mViewModel.loadSelectedTrack();
     }
 
     @Override
@@ -103,11 +107,17 @@ public class ResultsDetailsFragment extends Fragment {
                 Toast.makeText(getContext(), R.string.permissions_denied, Toast.LENGTH_SHORT).show();
             }
         }else if (item.getItemId()==R.id.actionDelete){
-            if (mRealmRepository.deleteItem(mTrackId)){
+            if (mViewModel.deleteSelectedTrack()){
                 getActivity().onBackPressed();
             }
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDetach() {
+        Toothpick.closeScope(ResultsDetailsFragment.class);
+        super.onDetach();
     }
 }

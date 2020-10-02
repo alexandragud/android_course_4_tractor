@@ -8,9 +8,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
 
+import com.elegion.tracktor.App;
 import com.elegion.tracktor.R;
+import com.elegion.tracktor.di.ViewModelModule;
 import com.elegion.tracktor.event.AddPositionToRouteEvent;
 import com.elegion.tracktor.event.GetRouteEvent;
 import com.elegion.tracktor.event.StartTrackEvent;
@@ -34,6 +35,11 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import toothpick.Scope;
+import toothpick.Toothpick;
+
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCallback,
@@ -43,7 +49,8 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
 
     private GoogleMap mMap;
 
-    private MainViewModel mMainViewModel;
+    @Inject
+    MainViewModel mMainViewModel;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -51,9 +58,16 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
         setRetainInstance(true);
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Scope scope = Toothpick.openScopes(App.class, TrackMapFragment.class)
+                .installModules(new ViewModelModule(this));
+        Toothpick.inject(this, scope);
+    }
+
     public void configure() {
         getMapAsync(this);
-        mMainViewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
     }
 
     @Override
@@ -157,5 +171,11 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
+    }
+
+    @Override
+    public void onDetach() {
+        Toothpick.closeScope(TrackMapFragment.class);
+        super.onDetach();
     }
 }

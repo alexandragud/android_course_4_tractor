@@ -3,7 +3,9 @@ package com.elegion.tracktor.ui.map;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.elegion.tracktor.data.IRepository;
 import com.elegion.tracktor.data.RealmRepository;
+import com.elegion.tracktor.data.model.Track;
 import com.elegion.tracktor.event.AddPositionToRouteEvent;
 import com.elegion.tracktor.event.UpdateRouteEvent;
 import com.elegion.tracktor.event.UpdateTimerEvent;
@@ -13,6 +15,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Date;
+
+import javax.inject.Inject;
+
 public class MainViewModel extends ViewModel {
 
     private MutableLiveData<Boolean> startEnabled = new MutableLiveData<>();
@@ -20,7 +26,8 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<String> mTimeText = new MutableLiveData<>();
     private MutableLiveData<String> mDistanceText = new MutableLiveData<>();
 
-    private RealmRepository mRealmRepository;
+    @Inject
+    RealmRepository mRepository;
     private long mDurationRaw;
     private double mDistanceRaw;
 
@@ -28,7 +35,6 @@ public class MainViewModel extends ViewModel {
         EventBus.getDefault().register(this);
         startEnabled.setValue(true);
         stopEnabled.setValue(false);
-        mRealmRepository = new RealmRepository();
     }
 
     public void switchButtons() {
@@ -87,6 +93,18 @@ public class MainViewModel extends ViewModel {
     }
 
     public long saveResults(String base64image) {
-        return mRealmRepository.createAndInsertTrackFrom(mDurationRaw, mDistanceRaw, base64image);
+        Track track = createTrackFromData(mDurationRaw, mDistanceRaw, base64image);
+        return mRepository.insertItem(track);
     }
+
+    private Track createTrackFromData(long duration, double distance, String base64image) {
+        Track track = new Track();
+        track.setDistance(distance);
+        track.setDuration(duration);
+        track.setImageBase64(base64image);
+        track.setDate(new Date());
+        return track;
+    }
+
+
 }

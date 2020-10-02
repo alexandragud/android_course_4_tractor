@@ -9,23 +9,27 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.elegion.tracktor.App;
 import com.elegion.tracktor.R;
-import com.elegion.tracktor.data.RealmRepository;
-import com.elegion.tracktor.util.CustomViewModelFactory;
+import com.elegion.tracktor.di.ViewModelModule;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
 public class ResultsFragment extends Fragment{
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
 
-    private ResultsViewModel mViewModel;
+    @Inject
+    ResultsViewModel mViewModel;
     private OnItemClickListener mOnItemClickListener;
     private ResultsAdapter mAdapter;
 
@@ -46,13 +50,9 @@ public class ResultsFragment extends Fragment{
             throw new RuntimeException(context.toString()
                     + " must implement OnItemClickListener");
         }
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        CustomViewModelFactory factory = new CustomViewModelFactory(new RealmRepository());
-        mViewModel = new ViewModelProvider(this, factory).get(ResultsViewModel.class);
+        Scope scope = Toothpick.openScopes(App.class, ResultsFragment.class)
+                .installModules(new ViewModelModule(this));
+        Toothpick.inject(this, scope);
     }
 
     @Nullable
@@ -81,6 +81,7 @@ public class ResultsFragment extends Fragment{
     public void onDetach() {
         super.onDetach();
         mOnItemClickListener = null;
+        Toothpick.closeScope(ResultsFragment.class);
     }
 
     public interface OnItemClickListener{
