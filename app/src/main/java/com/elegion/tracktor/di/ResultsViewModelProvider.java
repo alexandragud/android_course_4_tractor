@@ -3,7 +3,6 @@ package com.elegion.tracktor.di;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
-import com.elegion.tracktor.ui.map.MainViewModel;
 import com.elegion.tracktor.ui.results.ResultsViewModel;
 import com.elegion.tracktor.util.CustomViewModelFactory;
 
