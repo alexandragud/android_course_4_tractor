@@ -19,6 +19,10 @@ import org.mockito.junit.MockitoRule;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import toothpick.testing.ToothPickRule;
+
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,19 +30,20 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ResultsViewModelTest {
 
-    @Mock
-    private RealmRepository mRepository;
-
-    @Mock
-    private Observer<List<Track>> observer;
-
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
+    @Rule
+    public ToothPickRule mToothPickRule = new ToothPickRule(this, ResultsViewModel.class);
     @Rule
     public TestRule mTestRule = new InstantTaskExecutorRule();
 
-    private ResultsViewModel mViewModel;
+    @Mock
+    private RealmRepository mRepository;
+    @Mock
+    private Observer<List<Track>> observer;
+
+    @Inject
+    ResultsViewModel mViewModel;
 
     private List<Track> mTracks;
 
@@ -47,8 +52,9 @@ public class ResultsViewModelTest {
         mTracks = new ArrayList<>();
         mTracks.add(new Track());
         when(mRepository.getAll()).thenReturn(mTracks);
-        mViewModel = new ResultsViewModel(mRepository);
+        mViewModel = new ResultsViewModel();
         mViewModel.getTracks().observeForever(observer);
+        mToothPickRule.inject(mViewModel);
     }
 
     @Test
