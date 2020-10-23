@@ -19,6 +19,14 @@ public class Track extends RealmObject {
 
     private String mImageBase64;
 
+    private Double mSpeed;
+
+    private ActivityType mActivityType;
+
+    private String mComment;
+
+    private long mCalories;
+
     public long getId() {
         return mId;
     }
@@ -59,6 +67,38 @@ public class Track extends RealmObject {
         mImageBase64 = imageBase64;
     }
 
+    public void setSpeed(Double speed) {
+        mSpeed = speed;
+    }
+
+    public Double getSpeed(){
+        return mSpeed;
+    }
+
+    public ActivityType getActivityType() {
+        return mActivityType;
+    }
+
+    public void setActivityType(ActivityType activityType) {
+        mActivityType = activityType;
+    }
+
+    public String getComment() {
+        return mComment;
+    }
+
+    public void setComment(String comment) {
+        mComment = comment;
+    }
+
+    public long getCalories() {
+        return mCalories;
+    }
+
+    public void setCalories(long calories) {
+        mCalories = calories;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -74,5 +114,17 @@ public class Track extends RealmObject {
     @Override
     public int hashCode() {
         return Objects.hash(mId, mDate, mDuration, mDistance, mImageBase64);
+    }
+
+    @Override
+    public String toString() {
+        return "Track{" +
+                "mId=" + mId +
+                ", mDate=" + mDate +
+                ", mDuration=" + mDuration +
+                ", mDistance=" + mDistance +
+                ", mSpeed=" + mSpeed +
+                ", mActivityValue='" + mActivityType.getName() + '\'' +
+                '}';
     }
 }

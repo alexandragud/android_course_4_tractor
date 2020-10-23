@@ -2,6 +2,10 @@
     <string name="app_name">Tracktor</string>
     <string name="timeLabel">Время:</string>
     <string name="distanceLabel">Расстояние:</string>
+    <string name="dateLabel">Дата:</string>
+    <string name="caloriesLabel">Калории:</string>
+    <string name="speedLabel">Скорость:</string>
+    <string name="activityLabel">Деятельность:</string>
     <string name="start">Старт</string>
     <string name="stop">Стоп</string>
     <string name="statistic">Статистика</string>
@@ -18,13 +22,25 @@
     <string name="dialog_title_auto_shutdown">Выберите время автоотключения</string>
     <string name="title_user_weight">Вес пользователя</string>
     <string name="dialog_title_user_weight">Вес пользователя</string>
+    <string name="title_user_gender">Пол пользователя</string>
+    <string name="dialog_title_user_gender">Выберите пол пользователя</string>
+    <string name="title_user_height">Рост пользователя</string>
+    <string name="dialog_title_user_height">Рост пользователя (см)</string>
+    <string name="title_user_age">Возраст пользователя</string>
+    <string name="dialog_title_user_age">Возраст пользователя</string>
 
     <string name="pref_key_unit">unit</string>
     <string name="pref_key_shutdown">shutdown</string>
     <string name="pref_key_weight">weight</string>
+    <string name="pref_key_gender">gender</string>
+    <string name="pref_key_height">height</string>
+    <string name="pref_key_age">age</string>
     <string name="pref_default_value_unit">1</string>
     <string name="pref_default_value_shutdown">-1</string>
     <string name="pref_default_value_weight">60</string>
+    <string name="pref_default_value_gender">1</string>
+    <string name="pref_default_value_height">170</string>
+    <string name="pref_default_value_age">18</string>
     <string name="btn_delete_result">Удалить</string>
 
     <string name="dont_stay">Не стойте на месте!</string>
@@ -37,4 +53,8 @@
     <string name="stopRoute">Закончить маршрут</string>
     <string name="notify_info">Время: %s\nРасстояние: %s "</string>
     <string name="delete">Удалить</string>
+    <string name="comment">Введите комментарий</string>
+    <string name="comment_title">Введите комментарий</string>
+    <string name="comment_button_ok">Сохранить</string>
+    <string name="comment_button_cancel">Отмена</string>
 </resources>

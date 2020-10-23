@@ -1,5 +1,8 @@
 package com.elegion.tracktor.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class StringUtil {
@@ -13,6 +16,18 @@ public class StringUtil {
 
     public static String getDistanceText(double value) {
         return round(value, 0) + " м.";
+    }
+
+    public static String getDateText(Date date){
+        return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(date);
+    }
+
+    public static String getSpeedText(double value){
+        return round(value, 1) + " м/с";
+    }
+
+    public static String getCaloriesText(double value){
+        return round(value, 0) + " ккал";
     }
 
     public static String round(double value, int places) {
