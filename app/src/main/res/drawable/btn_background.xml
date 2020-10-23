@@ -4,7 +4,8 @@
         android:height="30dp"
         android:width="30dp">
         <shape android:shape="oval">
-            <solid android:color="#FB8059" />
+            <solid android:color="#FAF8F7" />
+            <stroke android:color="#FB8059" android:width="1dp"/>
         </shape>
     </item>
 </layer-list>

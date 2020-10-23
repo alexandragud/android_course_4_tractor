@@ -6,6 +6,7 @@
     <string name="caloriesLabel">Калории:</string>
     <string name="speedLabel">Скорость:</string>
     <string name="activityLabel">Деятельность:</string>
+    <string name="commentLabel">Комментарий:</string>
     <string name="start">Старт</string>
     <string name="stop">Стоп</string>
     <string name="statistic">Статистика</string>

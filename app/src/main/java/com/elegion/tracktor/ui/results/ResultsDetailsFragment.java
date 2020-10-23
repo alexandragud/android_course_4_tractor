@@ -31,6 +31,7 @@ import com.elegion.tracktor.R;
 import com.elegion.tracktor.data.model.ActivityType;
 import com.elegion.tracktor.di.ViewModelModule;
 import com.elegion.tracktor.util.CaloriesCalculator;
+import com.elegion.tracktor.util.StringUtil;
 
 import javax.inject.Inject;
 
@@ -107,15 +108,9 @@ public class ResultsDetailsFragment extends Fragment {
         mViewModel.getSelectedSpeed().observe(getViewLifecycleOwner(), s -> mSpeedText.setText(s));
         mViewModel.getSelectedDate().observe(getViewLifecycleOwner(), s -> mDateText.setText(s));
         mViewModel.getSelectedActivity().observe(getViewLifecycleOwner(), this::selectActivity);
-        mViewModel.getSelectedComment().observe(getViewLifecycleOwner(), this::setComment);
+        mViewModel.getSelectedComment().observe(getViewLifecycleOwner(), s -> mCommentText.setText(StringUtil.getComment(s)));
         mViewModel.getSelectedCalories().observe(getViewLifecycleOwner(), s -> mCaloriesText.setText(s));
         mViewModel.loadSelectedTrack();
-    }
-
-    private void setComment(String comment) {
-        if (comment == null || comment.isEmpty())
-            comment = getString(R.string.comment);
-        mCommentText.setText(comment);
     }
 
     private void selectActivity(ActivityType value) {

@@ -1,6 +1,5 @@
 package com.elegion.tracktor.util;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -19,7 +18,7 @@ public class StringUtil {
     }
 
     public static String getDateText(Date date){
-        return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH).format(date);
+        return new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(date);
     }
 
     public static String getSpeedText(double value){
@@ -32,5 +31,11 @@ public class StringUtil {
 
     public static String round(double value, int places) {
         return String.format("%." + places + "f", value);
+    }
+
+    public static String getComment(String comment) {
+            if (comment == null || comment.isEmpty())
+                return "Введите комментарий";
+           return comment;
     }
 }
