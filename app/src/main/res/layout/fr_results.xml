@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/recycler"
-    android:name="com.elegion.tracktor.ui.results.ResultsFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.results.ResultsFragment"
-    tools:listitem="@layout/li_track"/>
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:name="com.elegion.tracktor.ui.results.ResultsFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        tools:context=".ui.results.ResultsFragment"
+        tools:listitem="@layout/li_track" />
+
+    <include
+        layout="@layout/v_empty_results"
+        android:id="@+id/emptyResults"
+        android:visibility="gone" />
+
+</FrameLayout>

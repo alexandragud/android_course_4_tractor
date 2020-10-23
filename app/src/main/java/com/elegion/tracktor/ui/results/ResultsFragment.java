@@ -14,7 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.elegion.tracktor.App;
 import com.elegion.tracktor.R;
+import com.elegion.tracktor.data.model.Track;
 import com.elegion.tracktor.di.ViewModelModule;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,6 +30,9 @@ public class ResultsFragment extends Fragment{
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
+
+    @BindView(R.id.emptyResults)
+    View mEmptyResultsView;
 
     @Inject
     ResultsViewModel mViewModel;
@@ -71,10 +77,22 @@ public class ResultsFragment extends Fragment{
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mAdapter = new ResultsAdapter(mOnItemClickListener);
-        mViewModel.getTracks().observe(getViewLifecycleOwner(), tracks -> mAdapter.submitList(tracks));
+        mViewModel.getTracks().observe(getViewLifecycleOwner(), this::showData);
         mViewModel.loadTracks();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void showData(List<Track> tracks) {
+        if (tracks.size()>0){
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyResultsView.setVisibility(View.GONE);
+            mAdapter.submitList(tracks);
+        } else{
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyResultsView.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override

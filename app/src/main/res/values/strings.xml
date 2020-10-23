@@ -57,4 +57,5 @@
     <string name="comment_title">Введите комментарий</string>
     <string name="comment_button_ok">Сохранить</string>
     <string name="comment_button_cancel">Отмена</string>
+    <string name="empty_results">Список результатов пуст</string>
 </resources>
