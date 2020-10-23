@@ -50,7 +50,6 @@ public class ResultsViewModel extends ViewModel {
 
     public void loadSelectedTrack() {
         Track track = mRepository.getItem(selectedTrackId);
-        Log.i("Track ", track.toString());
         mSelectedTimeText.postValue(StringUtil.getTimeText(track.getDuration()));
         mSelectedDistanceText.postValue(StringUtil.getDistanceText(track.getDistance()));
         mSelectedImage.postValue(ScreenshotMaker.fromBase64(track.getImageBase64()));

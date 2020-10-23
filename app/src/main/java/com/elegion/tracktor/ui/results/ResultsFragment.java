@@ -71,7 +71,7 @@ public class ResultsFragment extends Fragment{
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mAdapter = new ResultsAdapter(mOnItemClickListener);
-        mViewModel.getTracks().observe(this, tracks -> mAdapter.submitList(tracks));
+        mViewModel.getTracks().observe(getViewLifecycleOwner(), tracks -> mAdapter.submitList(tracks));
         mViewModel.loadTracks();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
