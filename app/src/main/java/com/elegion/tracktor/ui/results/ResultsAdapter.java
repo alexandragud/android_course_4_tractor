@@ -25,11 +25,8 @@ public class ResultsAdapter extends ListAdapter<Track, ResultHolder> {
         }
     };
 
-    private ResultsFragment.OnItemClickListener mOnItemClickListener;
-
-    public ResultsAdapter(ResultsFragment.OnItemClickListener onItemClickListener) {
+    public ResultsAdapter() {
         super(DIFF_CALLBACK);
-        mOnItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -42,6 +39,5 @@ public class ResultsAdapter extends ListAdapter<Track, ResultHolder> {
     @Override
     public void onBindViewHolder(@NonNull ResultHolder holder, int position) {
         holder.bind(getItem(position));
-        holder.setListener(mOnItemClickListener);
     }
 }

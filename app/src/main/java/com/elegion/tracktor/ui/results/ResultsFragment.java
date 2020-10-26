@@ -16,6 +16,11 @@ import com.elegion.tracktor.App;
 import com.elegion.tracktor.R;
 import com.elegion.tracktor.data.model.Track;
 import com.elegion.tracktor.di.ViewModelModule;
+import com.elegion.tracktor.event.GetTrackResultEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -26,7 +31,7 @@ import butterknife.ButterKnife;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
-public class ResultsFragment extends Fragment{
+public class ResultsFragment extends Fragment {
 
     @BindView(R.id.recycler)
     RecyclerView mRecyclerView;
@@ -36,29 +41,34 @@ public class ResultsFragment extends Fragment{
 
     @Inject
     ResultsViewModel mViewModel;
-    private OnItemClickListener mOnItemClickListener;
     private ResultsAdapter mAdapter;
 
 
     public ResultsFragment() {
     }
 
-    public static ResultsFragment newInstance(){
+    public static ResultsFragment newInstance() {
         return new ResultsFragment();
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof OnItemClickListener){
-            mOnItemClickListener = (OnItemClickListener) context;
-        } else{
-            throw new RuntimeException(context.toString()
-                    + " must implement OnItemClickListener");
-        }
         Scope scope = Toothpick.openScopes(App.class, ResultsFragment.class)
                 .installModules(new ViewModelModule(this));
         Toothpick.inject(this, scope);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
     }
 
     @Nullable
@@ -76,7 +86,7 @@ public class ResultsFragment extends Fragment{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAdapter = new ResultsAdapter(mOnItemClickListener);
+        mAdapter = new ResultsAdapter();
         mViewModel.getTracks().observe(getViewLifecycleOwner(), this::showData);
         mViewModel.loadTracks();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -84,26 +94,25 @@ public class ResultsFragment extends Fragment{
     }
 
     private void showData(List<Track> tracks) {
-        if (tracks.size()>0){
+        if (tracks.size() > 0) {
             mRecyclerView.setVisibility(View.VISIBLE);
             mEmptyResultsView.setVisibility(View.GONE);
             mAdapter.submitList(tracks);
-        } else{
+        } else {
             mRecyclerView.setVisibility(View.GONE);
             mEmptyResultsView.setVisibility(View.VISIBLE);
         }
-
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mOnItemClickListener = null;
         Toothpick.closeScope(ResultsFragment.class);
     }
 
-    public interface OnItemClickListener{
-        void onClick(long trackId);
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGetTrackResult(GetTrackResultEvent event) {
+        ResultsActivity.start(getContext(), event.getTrackId());
     }
 
 }

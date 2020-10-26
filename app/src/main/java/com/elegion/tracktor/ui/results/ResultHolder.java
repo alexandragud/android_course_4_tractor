@@ -9,7 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.elegion.tracktor.R;
 import com.elegion.tracktor.data.model.Track;
+import com.elegion.tracktor.event.GetTrackResultEvent;
 import com.elegion.tracktor.util.StringUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 public class ResultHolder extends RecyclerView.ViewHolder {
 
@@ -61,14 +64,8 @@ public class ResultHolder extends RecyclerView.ViewHolder {
             }
             isExpanded = !isExpanded;
         });
-    }
 
-    public void setListener(ResultsFragment.OnItemClickListener listener){
-        mView.setOnClickListener(v -> {
-            if (null!=listener){
-                listener.onClick(mTrackId);
-            }
-        });
+        mView.setOnClickListener(l -> EventBus.getDefault().post(new GetTrackResultEvent(mTrackId)));
     }
 
     @Override

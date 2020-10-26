@@ -2,13 +2,13 @@ package com.elegion.tracktor.event;
 
 public class GetTrackResultEvent {
 
-    private int trackId;
+    private long trackId;
 
-    public GetTrackResultEvent(int trackId) {
+    public GetTrackResultEvent(long trackId) {
         this.trackId = trackId;
     }
 
-    public int getTrackId() {
+    public long getTrackId() {
         return trackId;
     }
 }

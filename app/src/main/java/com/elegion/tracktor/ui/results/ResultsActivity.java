@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment;
 
 import com.elegion.tracktor.common.SingleFragmentActivity;
 
-public class ResultsActivity extends SingleFragmentActivity  implements ResultsFragment.OnItemClickListener {
+public class ResultsActivity extends SingleFragmentActivity{
     public static final String RESULT_KEY = "RESULT_KEY";
     public static final long LIST_ID = -1L;
 
@@ -25,10 +25,5 @@ public class ResultsActivity extends SingleFragmentActivity  implements ResultsF
             return ResultsDetailsFragment.newInstance(resultId);
         else
             return ResultsFragment.newInstance();
-    }
-
-    @Override
-    public void onClick(long trackId) {
-        changeFragment(ResultsDetailsFragment.newInstance(trackId));
     }
 }
