@@ -16,7 +16,9 @@ import com.elegion.tracktor.App;
 import com.elegion.tracktor.R;
 import com.elegion.tracktor.data.model.Track;
 import com.elegion.tracktor.di.ViewModelModule;
+import com.elegion.tracktor.event.DeleteTrackEvent;
 import com.elegion.tracktor.event.GetTrackResultEvent;
+import com.elegion.tracktor.event.UpdateTrackEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -113,6 +115,18 @@ public class ResultsFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetTrackResult(GetTrackResultEvent event) {
         ResultsActivity.start(getContext(), event.getTrackId());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDeleteTrack(DeleteTrackEvent event) {
+        if( mViewModel.deleteTrack(event.getTrackId()))
+            mAdapter.notifyDataSetChanged();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateTrack(UpdateTrackEvent event) {
+        mViewModel.updateTrack(event.getTrack());
+        mAdapter.notifyDataSetChanged();
     }
 
 }

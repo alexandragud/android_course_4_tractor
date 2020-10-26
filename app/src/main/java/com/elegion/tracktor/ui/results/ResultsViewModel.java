@@ -40,7 +40,7 @@ public class ResultsViewModel extends ViewModel {
     }
 
     public void loadTracks() {
-        if (mTracks.getValue() == null || mTracks.getValue().isEmpty())
+     //   if (mTracks.getValue() == null || mTracks.getValue().isEmpty())
             mTracks.postValue(mRepository.getAll());
     }
 
@@ -60,22 +60,30 @@ public class ResultsViewModel extends ViewModel {
         mSelectedCalories.postValue(StringUtil.getCaloriesText(track.getCalories()));
     }
 
+
     public boolean deleteSelectedTrack() {
-        return mRepository.deleteItem(selectedTrackId);
+        return deleteTrack(selectedTrackId);
+    }
+
+    public boolean deleteTrack(long id) {
+        boolean result = mRepository.deleteItem(id);
+        loadTracks();
+        return result;
     }
 
     public void updateTrackActivity(int activityId) {
         Track track = mRepository.getItem(selectedTrackId);
         ActivityType type = mRepository.getActivityType(activityId);
         track.setActivityType(type);
-        mRepository.updateItem(track);
+        updateTrack(track);
     }
 
-    public void updateTrackComment(String comment) {
-        Track track = mRepository.getItem(selectedTrackId);
-        track.setComment(comment);
-        mRepository.updateItem(track);
-        loadSelectedTrack();
+    public Track getSelectedTrack(){
+        return getTrack(selectedTrackId);
+    }
+
+    public Track getTrack(long id){
+        return mRepository.getItem(id);
     }
 
     public void updateCalories(CaloriesCalculator calculator) {
@@ -84,8 +92,12 @@ public class ResultsViewModel extends ViewModel {
         calculator.setActivityType(track.getActivityType());
         calculator.setSpeed(track.getSpeed());
         track.setCalories(calculator.calculate());
-        mRepository.updateItem(track);
+        updateTrack(track);
         loadSelectedTrack();
+    }
+
+    public void updateTrack(Track track){
+        mRepository.updateItem(track);
     }
 
     public MutableLiveData<List<Track>> getTracks() {

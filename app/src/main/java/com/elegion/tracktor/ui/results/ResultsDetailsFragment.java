@@ -1,12 +1,8 @@
 package com.elegion.tracktor.ui.results;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,24 +10,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.elegion.tracktor.App;
 import com.elegion.tracktor.R;
 import com.elegion.tracktor.data.model.ActivityType;
+import com.elegion.tracktor.data.model.Track;
 import com.elegion.tracktor.di.ViewModelModule;
+import com.elegion.tracktor.event.ShareTrackInfoEvent;
+import com.elegion.tracktor.event.ShowCommentDialogEvent;
+import com.elegion.tracktor.event.UpdateTrackEvent;
 import com.elegion.tracktor.util.CaloriesCalculator;
 import com.elegion.tracktor.util.StringUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
@@ -42,7 +42,6 @@ import butterknife.OnItemSelected;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.elegion.tracktor.ui.results.ResultsActivity.RESULT_KEY;
 
 public class ResultsDetailsFragment extends Fragment {
@@ -84,6 +83,18 @@ public class ResultsDetailsFragment extends Fragment {
         Scope scope = Toothpick.openScopes(App.class, ResultsDetailsFragment.class)
                 .installModules(new ViewModelModule(this));
         Toothpick.inject(this, scope);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
     }
 
     @Nullable
@@ -132,18 +143,7 @@ public class ResultsDetailsFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.actionShare) {
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_GRANTED) {
-                String path = MediaStore.Images.Media.insertImage(requireActivity().getContentResolver(), mImage, "Мой маршрут", null);
-                Uri uri = Uri.parse(path);
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("image/jpeg");
-                intent.putExtra(Intent.EXTRA_STREAM, uri);
-                intent.putExtra(Intent.EXTRA_TEXT, getTrackInfo());
-                startActivity(Intent.createChooser(intent, "Результаты маршрута"));
-                return true;
-            } else {
-                Toast.makeText(getContext(), R.string.permissions_denied, Toast.LENGTH_SHORT).show();
-            }
+           EventBus.getDefault().post(new ShareTrackInfoEvent(mViewModel.getSelectedTrack()));
         } else if (item.getItemId() == R.id.actionDelete) {
             if (mViewModel.deleteSelectedTrack()) {
                 getActivity().onBackPressed();
@@ -151,17 +151,6 @@ public class ResultsDetailsFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private String getTrackInfo() {
-        return String.format("Дата: %s\nВремя: %s\nРасстояние: %s\nСредняя скорость: %s\nДеятельность: %s\nКалории: %s\nКомментарий: %s",
-                mDateText.getText(),
-                mTimeText.getText(),
-                mDistanceText.getText(),
-                mSpeedText.getText(),
-                mActivityList.getSelectedItem().toString(),
-                mCaloriesText.getText(),
-                mCommentText.getText());
     }
 
     @Override
@@ -172,18 +161,8 @@ public class ResultsDetailsFragment extends Fragment {
 
     @OnClick(R.id.add_comment_btn)
     void onCommentClick() {
-        AlertDialog.Builder commentDialog = new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.comment_title);
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dilaog_add_comment, null);
-        EditText comment = view.findViewById(R.id.et_comment);
-        mViewModel.getSelectedComment().observe(getViewLifecycleOwner(), comment::setText);
-        commentDialog.setView(view);
-        commentDialog.setPositiveButton(R.string.comment_button_ok, ((dialog, which) ->
-                mViewModel.updateTrackComment(comment.getText().toString()))
-        );
-        commentDialog.setNegativeButton(R.string.comment_button_cancel, (dialog, which) -> dialog.cancel());
-        commentDialog.create().show();
+        Track track = mViewModel.getSelectedTrack();
+        EventBus.getDefault().post(new ShowCommentDialogEvent(track));
     }
 
     @OnItemSelected(R.id.spActivity)
@@ -195,5 +174,11 @@ public class ResultsDetailsFragment extends Fragment {
     @OnItemSelected(value = R.id.spActivity, callback = OnItemSelected.Callback.NOTHING_SELECTED)
     void onNothingSelected() {
         mActivityList.setSelection(0);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateTrack(UpdateTrackEvent event) {
+        mViewModel.updateTrack(event.getTrack());
+        mViewModel.loadSelectedTrack();
     }
 }

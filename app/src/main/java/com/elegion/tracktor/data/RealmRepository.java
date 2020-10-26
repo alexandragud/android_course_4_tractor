@@ -39,7 +39,8 @@ public class RealmRepository implements IRepository<Track> {
 
     @Override
     public List<Track> getAll() {
-        return mRealm.where(Track.class).findAll();
+        List<Track> res = mRealm.where(Track.class).findAll();
+        return mRealm.copyFromRealm(res);
     }
 
     @Override

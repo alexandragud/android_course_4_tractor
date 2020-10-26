@@ -9,7 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.elegion.tracktor.R;
 import com.elegion.tracktor.data.model.Track;
+import com.elegion.tracktor.event.DeleteTrackEvent;
 import com.elegion.tracktor.event.GetTrackResultEvent;
+import com.elegion.tracktor.event.ShareTrackInfoEvent;
+import com.elegion.tracktor.event.ShowCommentDialogEvent;
 import com.elegion.tracktor.util.StringUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -25,10 +28,11 @@ public class ResultHolder extends RecyclerView.ViewHolder {
     private TextView mActivityTypeText;
     private TextView mCommentText;
     private ImageButton mExpandButton;
+    private ImageButton mDeleteButton;
+    private ImageButton mEditCommentButton;
+    private ImageButton mSendButton;
     private View mExpandedView;
     private long mTrackId;
-
-    private boolean isExpanded = false;
 
     public ResultHolder(@NonNull View itemView) {
         super(itemView);
@@ -40,11 +44,14 @@ public class ResultHolder extends RecyclerView.ViewHolder {
         mCaloriesText = mView.findViewById(R.id.tv_calories);
         mActivityTypeText = mView.findViewById(R.id.tv_activity);
         mCommentText = mView.findViewById(R.id.tv_comment);
-        mExpandedView = mView.findViewById(R.id.expandedItem);
-        mExpandButton = mView.findViewById(R.id.expandButton);
+        mExpandedView = mView.findViewById(R.id.expanded_item);
+        mExpandButton = mView.findViewById(R.id.expand_button);
+        mDeleteButton = mView.findViewById(R.id.delete_button);
+        mEditCommentButton = mView.findViewById(R.id.add_comment_btn);
+        mSendButton = mView.findViewById(R.id.send_button);
     }
 
-    public void bind(Track track){
+    public void bind(Track track) {
         mTrackId = track.getId();
         mDateText.setText(StringUtil.getDateText(track.getDate()));
         mDistanceText.setText(StringUtil.getDistanceText(track.getDistance()));
@@ -53,24 +60,35 @@ public class ResultHolder extends RecyclerView.ViewHolder {
         mCaloriesText.setText(StringUtil.getCaloriesText(track.getCalories()));
         mActivityTypeText.setText(track.getActivityType().getName());
         mCommentText.setText(StringUtil.getComment(track.getComment()));
-
+        updateExpandedView(track.isExpand());
         mExpandButton.setOnClickListener(v -> {
-            if (isExpanded){
-                mExpandedView.setVisibility(View.GONE);
-                mExpandButton.setImageResource(R.drawable.ic_expand_more);
-            } else{
-                mExpandedView.setVisibility(View.VISIBLE);
-                mExpandButton.setImageResource(R.drawable.ic_expand_less);
-            }
-            isExpanded = !isExpanded;
+            boolean isExpanded = !track.isExpand();
+            updateExpandedView(isExpanded);
+            track.setExpand(isExpanded);
         });
 
-        mView.setOnClickListener(l -> EventBus.getDefault().post(new GetTrackResultEvent(mTrackId)));
+        mDeleteButton.setOnClickListener(v -> EventBus.getDefault().post(new DeleteTrackEvent(mTrackId)));
+
+        mView.setOnClickListener(v -> EventBus.getDefault().post(new GetTrackResultEvent(mTrackId)));
+
+        mEditCommentButton.setOnClickListener(v-> EventBus.getDefault().post(new ShowCommentDialogEvent(track)));
+
+        mSendButton.setOnClickListener(v-> EventBus.getDefault().post(new ShareTrackInfoEvent(track)));
     }
 
     @Override
     public String toString() {
         return super.toString() + " '" + mDistanceText.getText() + "'";
+    }
+
+    private void updateExpandedView(boolean isExpanded){
+        if (!isExpanded) {
+            mExpandedView.setVisibility(View.GONE);
+            mExpandButton.setImageResource(R.drawable.ic_expand_more);
+        } else {
+            mExpandedView.setVisibility(View.VISIBLE);
+            mExpandButton.setImageResource(R.drawable.ic_expand_less);
+        }
     }
 
 }

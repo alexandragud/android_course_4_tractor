@@ -1,9 +1,12 @@
 package com.elegion.tracktor.data.model;
 
+import com.elegion.tracktor.util.StringUtil;
+
 import java.util.Date;
 import java.util.Objects;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 public class Track extends RealmObject {
@@ -26,6 +29,9 @@ public class Track extends RealmObject {
     private String mComment;
 
     private long mCalories;
+
+    @Ignore
+    private boolean isExpand;
 
     public long getId() {
         return mId;
@@ -99,6 +105,14 @@ public class Track extends RealmObject {
         mCalories = calories;
     }
 
+    public boolean isExpand() {
+        return isExpand;
+    }
+
+    public void setExpand(boolean expand) {
+        isExpand = expand;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -126,5 +140,16 @@ public class Track extends RealmObject {
                 ", mSpeed=" + mSpeed +
                 ", mActivityValue='" + mActivityType.getName() + '\'' +
                 '}';
+    }
+
+    public String getTrackInfo(){
+        return String.format("Дата: %s\nВремя: %s\nРасстояние: %s\nСредняя скорость: %s\nДеятельность: %s\nКалории: %s\nКомментарий: %s",
+                StringUtil.getDateText(getDate()),
+                StringUtil.getTimeText(getDuration()),
+                StringUtil.getDistanceText(getDistance()),
+                StringUtil.getSpeedText(getSpeed()),
+                getActivityType().getName(),
+                StringUtil.getCaloriesText(getCalories()),
+                getComment());
     }
 }

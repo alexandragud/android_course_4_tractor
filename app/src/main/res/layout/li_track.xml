@@ -81,7 +81,7 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/expandButton"
+            android:id="@+id/expand_button"
             android:layout_width="wrap_content"
             android:layout_height="75dp"
             android:layout_alignParentEnd="true"
@@ -90,7 +90,7 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/expandedItem"
+        android:id="@+id/expanded_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
