@@ -64,8 +64,6 @@ public class ResultsDetailsFragment extends Fragment {
     @BindView(R.id.tvComment)
     TextView mCommentText;
 
-
-    private Bitmap mImage;
     @Inject
     ResultsViewModel mViewModel;
 
@@ -112,10 +110,7 @@ public class ResultsDetailsFragment extends Fragment {
         mViewModel.selectTrack(getArguments().getLong(ResultsActivity.RESULT_KEY, 0));
         mViewModel.getSelectedDistanceText().observe(getViewLifecycleOwner(), s -> mDistanceText.setText(s));
         mViewModel.getSelectedTimeText().observe(getViewLifecycleOwner(), s -> mTimeText.setText(s));
-        mViewModel.getSelectedImage().observe(getViewLifecycleOwner(), b -> {
-            mImage = b;
-            mScreenshotImage.setImageBitmap(b);
-        });
+        mViewModel.getSelectedImage().observe(getViewLifecycleOwner(), b -> mScreenshotImage.setImageBitmap(b));
         mViewModel.getSelectedSpeed().observe(getViewLifecycleOwner(), s -> mSpeedText.setText(s));
         mViewModel.getSelectedDate().observe(getViewLifecycleOwner(), s -> mDateText.setText(s));
         mViewModel.getSelectedActivity().observe(getViewLifecycleOwner(), this::selectActivity);

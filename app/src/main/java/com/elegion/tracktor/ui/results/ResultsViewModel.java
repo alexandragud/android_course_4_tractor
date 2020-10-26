@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.elegion.tracktor.data.RealmRepository;
+import com.elegion.tracktor.data.SortType;
 import com.elegion.tracktor.data.model.ActivityType;
 import com.elegion.tracktor.data.model.Track;
 import com.elegion.tracktor.util.CaloriesCalculator;
@@ -36,12 +37,17 @@ public class ResultsViewModel extends ViewModel {
 
     private long selectedTrackId;
 
+    private boolean isAscendingSorted;
+    private String sortedField;
+
     public ResultsViewModel() {
+        isAscendingSorted = true;
+        sortedField = SortType.BY_DATE.getFieldName();
     }
 
     public void loadTracks() {
      //   if (mTracks.getValue() == null || mTracks.getValue().isEmpty())
-            mTracks.postValue(mRepository.getAll());
+            mTracks.postValue(mRepository.getAllWithSort(sortedField, isAscendingSorted));
     }
 
     public void selectTrack(long trackId) {
@@ -98,6 +104,16 @@ public class ResultsViewModel extends ViewModel {
 
     public void updateTrack(Track track){
         mRepository.updateItem(track);
+    }
+
+    public void changeSortDirection(boolean isAscending){
+        isAscendingSorted = isAscending;
+        loadTracks();
+    }
+
+    public void changeSortType (SortType type){
+        sortedField = type.getFieldName();
+        loadTracks();
     }
 
     public MutableLiveData<List<Track>> getTracks() {

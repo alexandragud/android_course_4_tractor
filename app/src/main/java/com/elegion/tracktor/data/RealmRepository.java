@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.Sort;
 
 public class RealmRepository implements IRepository<Track> {
 
@@ -41,6 +42,11 @@ public class RealmRepository implements IRepository<Track> {
     public List<Track> getAll() {
         List<Track> res = mRealm.where(Track.class).findAll();
         return mRealm.copyFromRealm(res);
+    }
+
+    public List<Track> getAllWithSort(String fieldName, boolean ascending){
+        Sort type = (ascending)? Sort.ASCENDING : Sort.DESCENDING;
+        return  mRealm.copyFromRealm(mRealm.where(Track.class).sort(fieldName, type).findAll());
     }
 
     @Override

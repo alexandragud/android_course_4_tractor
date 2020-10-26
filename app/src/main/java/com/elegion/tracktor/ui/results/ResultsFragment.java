@@ -3,6 +3,9 @@ package com.elegion.tracktor.ui.results;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.elegion.tracktor.App;
 import com.elegion.tracktor.R;
+import com.elegion.tracktor.data.SortType;
 import com.elegion.tracktor.data.model.Track;
 import com.elegion.tracktor.di.ViewModelModule;
 import com.elegion.tracktor.event.DeleteTrackEvent;
@@ -45,6 +49,8 @@ public class ResultsFragment extends Fragment {
     ResultsViewModel mViewModel;
     private ResultsAdapter mAdapter;
 
+    private Menu mMenu;
+
 
     public ResultsFragment() {
     }
@@ -62,6 +68,46 @@ public class ResultsFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_results_fragment, menu);
+        this.mMenu = menu;
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        item.setVisible(false);
+        switch (item.getItemId()){
+            case R.id.sort_ascending:{
+                mMenu.findItem(R.id.sort_descending).setVisible(true);
+                mViewModel.changeSortDirection(false);
+                break;
+            }
+            case R.id.sort_descending:{
+                mMenu.findItem(R.id.sort_ascending).setVisible(true);
+                mViewModel.changeSortDirection(true);
+                break;
+            }
+            case R.id.sort_by_date:{
+                mMenu.findItem(R.id.sort_by_duration).setVisible(true);
+                mViewModel.changeSortType(SortType.BY_DURATION);
+                break;
+            }
+            case R.id.sort_by_duration:{
+                mMenu.findItem(R.id.sort_by_distance).setVisible(true);
+                mViewModel.changeSortType(SortType.BY_DISTANCE);
+                break;
+            }
+            case R.id.sort_by_distance:{
+                mMenu.findItem(R.id.sort_by_date).setVisible(true);
+                mViewModel.changeSortType(SortType.BY_DATE);
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
@@ -76,6 +122,7 @@ public class ResultsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fr_results, container, false);
     }
 
