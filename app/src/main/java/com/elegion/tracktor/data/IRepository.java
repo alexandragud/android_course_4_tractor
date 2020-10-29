@@ -13,4 +13,6 @@ public interface IRepository<T> {
     boolean deleteItem(long id);
 
     void updateItem(T t);
+
+    void updateAll(List<T> l);
 }

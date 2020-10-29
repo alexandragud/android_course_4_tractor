@@ -77,7 +77,7 @@ public class Track extends RealmObject {
         mSpeed = speed;
     }
 
-    public Double getSpeed(){
+    public Double getSpeed() {
         return mSpeed;
     }
 
@@ -120,14 +120,19 @@ public class Track extends RealmObject {
         Track track = (Track) o;
         return mId == track.mId &&
                 mDuration == track.mDuration &&
+                mCalories == track.mCalories &&
+                isExpand == track.isExpand &&
                 Objects.equals(mDate, track.mDate) &&
                 Objects.equals(mDistance, track.mDistance) &&
-                Objects.equals(mImageBase64, track.mImageBase64) ;
+                Objects.equals(mImageBase64, track.mImageBase64) &&
+                Objects.equals(mSpeed, track.mSpeed) &&
+                Objects.equals(mActivityType, track.mActivityType) &&
+                Objects.equals(mComment, track.mComment);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mDate, mDuration, mDistance, mImageBase64);
+        return Objects.hash(mId, mDate, mDuration, mDistance, mImageBase64, mSpeed, mActivityType, mComment, mCalories, isExpand);
     }
 
     @Override
@@ -142,7 +147,7 @@ public class Track extends RealmObject {
                 '}';
     }
 
-    public String getTrackInfo(){
+    public String getTrackInfo() {
         return String.format("Дата: %s\nВремя: %s\nРасстояние: %s\nСредняя скорость: %s\nДеятельность: %s\nКалории: %s\nКомментарий: %s",
                 StringUtil.getDateText(getDate()),
                 StringUtil.getTimeText(getDuration()),
@@ -150,6 +155,6 @@ public class Track extends RealmObject {
                 StringUtil.getSpeedText(getSpeed()),
                 getActivityType().getName(),
                 StringUtil.getCaloriesText(getCalories()),
-                getComment());
+                StringUtil.getComment(getComment()));
     }
 }

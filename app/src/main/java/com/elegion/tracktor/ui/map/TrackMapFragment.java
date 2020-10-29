@@ -144,6 +144,7 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onStartRoute(StartTrackEvent event) {
         mMap.clear();
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(event.getStartPosition(), DEFAULT_ZOOM));
         addMarker(event.getStartPosition(), getString(R.string.start));
     }
 
@@ -155,11 +156,11 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
         } else {
             addMarker(route.get(route.size() - 1), getString(R.string.end));
 
-            takeMapScreenshot(route, bitmap ->{
-                        String base64image = ScreenshotMaker.toBase64(bitmap);
-                        long resultId = mMainViewModel.saveResults(base64image);
-                        ResultsActivity.start(getContext(),resultId);
-                    });
+            takeMapScreenshot(route, bitmap -> {
+                String base64image = ScreenshotMaker.toBase64(bitmap);
+                long resultId = mMainViewModel.saveResults(base64image);
+                ResultsActivity.start(getContext(), resultId);
+            });
         }
     }
 

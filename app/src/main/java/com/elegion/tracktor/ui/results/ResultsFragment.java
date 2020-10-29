@@ -77,28 +77,28 @@ public class ResultsFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         item.setVisible(false);
-        switch (item.getItemId()){
-            case R.id.sort_ascending:{
+        switch (item.getItemId()) {
+            case R.id.sort_ascending: {
                 mMenu.findItem(R.id.sort_descending).setVisible(true);
                 mViewModel.changeSortDirection(false);
                 break;
             }
-            case R.id.sort_descending:{
+            case R.id.sort_descending: {
                 mMenu.findItem(R.id.sort_ascending).setVisible(true);
                 mViewModel.changeSortDirection(true);
                 break;
             }
-            case R.id.sort_by_date:{
+            case R.id.sort_by_date: {
                 mMenu.findItem(R.id.sort_by_duration).setVisible(true);
                 mViewModel.changeSortType(SortType.BY_DURATION);
                 break;
             }
-            case R.id.sort_by_duration:{
+            case R.id.sort_by_duration: {
                 mMenu.findItem(R.id.sort_by_distance).setVisible(true);
                 mViewModel.changeSortType(SortType.BY_DISTANCE);
                 break;
             }
-            case R.id.sort_by_distance:{
+            case R.id.sort_by_distance: {
                 mMenu.findItem(R.id.sort_by_date).setVisible(true);
                 mViewModel.changeSortType(SortType.BY_DATE);
                 break;
@@ -111,6 +111,7 @@ public class ResultsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+        mViewModel.loadTracks();
     }
 
     @Override
@@ -137,7 +138,6 @@ public class ResultsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mAdapter = new ResultsAdapter();
         mViewModel.getTracks().observe(getViewLifecycleOwner(), this::showData);
-        mViewModel.loadTracks();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -147,6 +147,7 @@ public class ResultsFragment extends Fragment {
             mRecyclerView.setVisibility(View.VISIBLE);
             mEmptyResultsView.setVisibility(View.GONE);
             mAdapter.submitList(tracks);
+            mAdapter.notifyDataSetChanged();
         } else {
             mRecyclerView.setVisibility(View.GONE);
             mEmptyResultsView.setVisibility(View.VISIBLE);
@@ -166,7 +167,7 @@ public class ResultsFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDeleteTrack(DeleteTrackEvent event) {
-        if( mViewModel.deleteTrack(event.getTrackId()))
+        if (mViewModel.deleteTrack(event.getTrackId()))
             mAdapter.notifyDataSetChanged();
     }
 

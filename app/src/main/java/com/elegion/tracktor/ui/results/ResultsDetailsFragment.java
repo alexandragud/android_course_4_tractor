@@ -1,7 +1,6 @@
 package com.elegion.tracktor.ui.results;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,7 +25,7 @@ import com.elegion.tracktor.di.ViewModelModule;
 import com.elegion.tracktor.event.ShareTrackInfoEvent;
 import com.elegion.tracktor.event.ShowCommentDialogEvent;
 import com.elegion.tracktor.event.UpdateTrackEvent;
-import com.elegion.tracktor.util.CaloriesCalculator;
+import com.elegion.tracktor.util.CaloriesUtil;
 import com.elegion.tracktor.util.StringUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -59,8 +58,8 @@ public class ResultsDetailsFragment extends Fragment {
     TextView mDateText;
     @BindView(R.id.spActivity)
     Spinner mActivityList;
-      @BindView(R.id.tvCalories)
-      TextView mCaloriesText;
+    @BindView(R.id.tvCalories)
+    TextView mCaloriesText;
     @BindView(R.id.tvComment)
     TextView mCommentText;
 
@@ -106,6 +105,7 @@ public class ResultsDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
+        mViewModel.setPersonBMR(CaloriesUtil.getBmrFromPrefs(getContext()));
         mActivityList.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, mViewModel.getAllActivities()));
         mViewModel.selectTrack(getArguments().getLong(ResultsActivity.RESULT_KEY, 0));
         mViewModel.getSelectedDistanceText().observe(getViewLifecycleOwner(), s -> mDistanceText.setText(s));
@@ -123,12 +123,6 @@ public class ResultsDetailsFragment extends Fragment {
         mActivityList.setSelection(value.getId());
     }
 
-    private void calculateCalories() {
-        CaloriesCalculator calculator = CaloriesCalculator.builder()
-                .setDataFromPreferences(getContext()).build();
-        mViewModel.updateCalories(calculator);
-    }
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_details_fragment, menu);
@@ -138,7 +132,7 @@ public class ResultsDetailsFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.actionShare) {
-           EventBus.getDefault().post(new ShareTrackInfoEvent(mViewModel.getSelectedTrack()));
+            EventBus.getDefault().post(new ShareTrackInfoEvent(mViewModel.getSelectedTrack()));
         } else if (item.getItemId() == R.id.actionDelete) {
             if (mViewModel.deleteSelectedTrack()) {
                 getActivity().onBackPressed();
@@ -163,7 +157,7 @@ public class ResultsDetailsFragment extends Fragment {
     @OnItemSelected(R.id.spActivity)
     void onActivitySelected(int position) {
         mViewModel.updateTrackActivity(position);
-        calculateCalories();
+        mViewModel.updateCaloriesForSelectedTrack();
     }
 
     @OnItemSelected(value = R.id.spActivity, callback = OnItemSelected.Callback.NOTHING_SELECTED)

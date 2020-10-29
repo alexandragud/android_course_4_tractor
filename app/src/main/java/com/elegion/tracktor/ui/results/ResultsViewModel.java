@@ -1,7 +1,6 @@
 package com.elegion.tracktor.ui.results;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -10,7 +9,7 @@ import com.elegion.tracktor.data.RealmRepository;
 import com.elegion.tracktor.data.SortType;
 import com.elegion.tracktor.data.model.ActivityType;
 import com.elegion.tracktor.data.model.Track;
-import com.elegion.tracktor.util.CaloriesCalculator;
+import com.elegion.tracktor.util.CaloriesUtil;
 import com.elegion.tracktor.util.ScreenshotMaker;
 import com.elegion.tracktor.util.StringUtil;
 
@@ -22,6 +21,8 @@ public class ResultsViewModel extends ViewModel {
 
     @Inject
     RealmRepository mRepository;
+
+    private double personBMR;
 
     private MutableLiveData<List<Track>> mTracks = new MutableLiveData<>();
 
@@ -46,12 +47,15 @@ public class ResultsViewModel extends ViewModel {
     }
 
     public void loadTracks() {
-     //   if (mTracks.getValue() == null || mTracks.getValue().isEmpty())
-            mTracks.postValue(mRepository.getAllWithSort(sortedField, isAscendingSorted));
+        mTracks.postValue(mRepository.getAllWithSort(sortedField, isAscendingSorted));
     }
 
     public void selectTrack(long trackId) {
         selectedTrackId = trackId;
+    }
+
+    public void setPersonBMR(double value) {
+        personBMR = value;
     }
 
     public void loadSelectedTrack() {
@@ -84,34 +88,37 @@ public class ResultsViewModel extends ViewModel {
         updateTrack(track);
     }
 
-    public Track getSelectedTrack(){
+    public Track getSelectedTrack() {
         return getTrack(selectedTrackId);
     }
 
-    public Track getTrack(long id){
+    public Track getTrack(long id) {
         return mRepository.getItem(id);
     }
 
-    public void updateCalories(CaloriesCalculator calculator) {
-        Track track = mRepository.getItem(selectedTrackId);
-        calculator.setTime(track.getDuration());
-        calculator.setActivityType(track.getActivityType());
-        calculator.setSpeed(track.getSpeed());
-        track.setCalories(calculator.calculate());
-        updateTrack(track);
+
+    public void updateCaloriesForSelectedTrack() {
+        updateCalories(selectedTrackId);
         loadSelectedTrack();
     }
 
-    public void updateTrack(Track track){
+    public void updateCalories(long trackId) {
+        Track track = mRepository.getItem(trackId);
+        long calories = CaloriesUtil.calculateCalories(personBMR, track);
+        track.setCalories(calories);
+        updateTrack(track);
+    }
+
+    public void updateTrack(Track track) {
         mRepository.updateItem(track);
     }
 
-    public void changeSortDirection(boolean isAscending){
+    public void changeSortDirection(boolean isAscending) {
         isAscendingSorted = isAscending;
         loadTracks();
     }
 
-    public void changeSortType (SortType type){
+    public void changeSortType(SortType type) {
         sortedField = type.getFieldName();
         loadTracks();
     }

@@ -2,6 +2,7 @@ package com.elegion.tracktor.data;
 
 import com.elegion.tracktor.data.model.ActivityType;
 import com.elegion.tracktor.data.model.Track;
+import com.elegion.tracktor.util.CaloriesUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +45,10 @@ public class RealmRepository implements IRepository<Track> {
         return mRealm.copyFromRealm(res);
     }
 
-    public List<Track> getAllWithSort(String fieldName, boolean ascending){
-        Sort type = (ascending)? Sort.ASCENDING : Sort.DESCENDING;
-        return  mRealm.copyFromRealm(mRealm.where(Track.class).sort(fieldName, type).findAll());
+    public List<Track> getAllWithSort(String fieldName, boolean ascending) {
+        Sort type = (ascending) ? Sort.ASCENDING : Sort.DESCENDING;
+        List<Track> res = mRealm.where(Track.class).sort(fieldName, type).findAll();
+        return mRealm.copyFromRealm(res);
     }
 
     @Override
@@ -93,6 +95,13 @@ public class RealmRepository implements IRepository<Track> {
         mRealm.commitTransaction();
     }
 
+    @Override
+    public void updateAll(List<Track> tracks) {
+        mRealm.beginTransaction();
+        mRealm.copyToRealmOrUpdate(tracks);
+        mRealm.commitTransaction();
+    }
+
     public List<String> getActivitiesList() {
         List<ActivityType> activities = mRealm.where(ActivityType.class).findAll();
         List<String> activityNames = new ArrayList<>();
@@ -103,5 +112,15 @@ public class RealmRepository implements IRepository<Track> {
 
     public ActivityType getActivityType(int activityId) {
         return mRealm.where(ActivityType.class).equalTo("id", activityId).findFirst();
+    }
+
+    public void updateAllTracksCalories(double personBMR) {
+        mRealm.executeTransaction(realm -> {
+            List<Track> tracks = realm.where(Track.class).findAll();
+            for (Track track : tracks) {
+                long calories = CaloriesUtil.calculateCalories(personBMR, track);
+                track.setCalories(calories);
+            }
+        });
     }
 }
