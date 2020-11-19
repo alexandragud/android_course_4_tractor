@@ -50,11 +50,12 @@ public class IconPickerPreference extends Preference implements IconPickerPrefer
 
     @Override
     protected void onSetInitialValue(@Nullable Object defaultValue) {
-        if (isPersistent()) {
-            selectedItemSource = getPersistedInt(0);
-        } else {
-            selectedItemSource = (Integer) defaultValue;
+        super.onSetInitialValue(defaultValue);
+        if (defaultValue instanceof Integer) {
+            selectedItemSource = getPersistedInt((Integer) defaultValue);
             persistInt(selectedItemSource);
+        }else{
+            selectedItemSource = getPersistedInt(0);
         }
     }
 

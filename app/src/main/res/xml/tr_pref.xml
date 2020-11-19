@@ -97,14 +97,14 @@
             android:title="@string/title_icon_start"
             app:icon_entryValues="@array/entries_list_preference_start_icon"
             android:key="@string/pref_key_icon_start"
-            app:defaultValue="@drawable/ic_icon_start_pizza"
+            app:defaultValue="@drawable/ic_icon_start_standart"
             />
 
         <com.elegion.tracktor.ui.preferences.IconPickerPreference
             android:title="@string/title_icon_stop"
             app:icon_entryValues="@array/entries_list_preference_stop_icon"
             android:key="@string/pref_key_icon_stop"
-            app:defaultValue="@drawable/ic_icon_stop_pizza"
+            app:defaultValue="@drawable/ic_icon_stop_standart"
             />
 
 
