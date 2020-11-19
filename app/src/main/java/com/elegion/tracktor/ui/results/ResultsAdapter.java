@@ -13,6 +13,8 @@ import com.elegion.tracktor.data.model.Track;
 
 public class ResultsAdapter extends ListAdapter<Track, ResultHolder> {
 
+    private boolean isDistanceInMiles;
+
     private static final DiffUtil.ItemCallback<Track> DIFF_CALLBACK = new DiffUtil.ItemCallback<Track>() {
         @Override
         public boolean areItemsTheSame(@NonNull Track oldItem, @NonNull Track newItem) {
@@ -25,8 +27,9 @@ public class ResultsAdapter extends ListAdapter<Track, ResultHolder> {
         }
     };
 
-    public ResultsAdapter() {
+    public ResultsAdapter(boolean isInMiles) {
         super(DIFF_CALLBACK);
+        isDistanceInMiles = isInMiles;
     }
 
     @NonNull
@@ -38,6 +41,6 @@ public class ResultsAdapter extends ListAdapter<Track, ResultHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ResultHolder holder, int position) {
-        holder.bind(getItem(position));
+        holder.bind(getItem(position), isDistanceInMiles);
     }
 }

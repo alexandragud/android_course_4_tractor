@@ -29,11 +29,13 @@ public class MainViewModel extends ViewModel {
     RealmRepository mRepository;
     private long mDurationRaw;
     private double mDistanceRaw;
+    private boolean isInMiles;
 
-    public MainViewModel(){
+    public MainViewModel() {
         EventBus.getDefault().register(this);
         startEnabled.setValue(true);
         stopEnabled.setValue(false);
+        isInMiles = false;
     }
 
     public void switchButtons() {
@@ -43,25 +45,34 @@ public class MainViewModel extends ViewModel {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateTimer(UpdateTimerEvent event){
+    public void onUpdateTimer(UpdateTimerEvent event) {
         mTimeText.postValue(StringUtil.getTimeText(event.getSeconds()));
-        mDistanceText.postValue(StringUtil.getDistanceText(event.getDistance()));
+        mDistanceText.postValue(StringUtil.getDistanceText(event.getDistance(), isInMiles));
         mDurationRaw = event.getSeconds();
         mDistanceRaw = event.getDistance();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateRoute(UpdateRouteEvent event){
+    public void onUpdateRoute(UpdateRouteEvent event) {
         mDistanceRaw = event.getDistance();
-        mDistanceText.postValue(StringUtil.getDistanceText(mDistanceRaw));
+        mDistanceText.postValue(StringUtil.getDistanceText(mDistanceRaw, isInMiles));
         startEnabled.postValue(false);
         stopEnabled.postValue(true);
 
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAddPositionToRoute(AddPositionToRouteEvent event){
-        mDistanceText.postValue(StringUtil.getDistanceText(event.getDistance()));
+    public void onAddPositionToRoute(AddPositionToRouteEvent event) {
+        mDistanceText.postValue(StringUtil.getDistanceText(event.getDistance(), isInMiles));
+    }
+
+    public void isDistanceInMiles(boolean value) {
+        isInMiles = value;
+        updateDistance();
+    }
+
+    private void updateDistance() {
+        mDistanceText.postValue(StringUtil.getDistanceText(mDistanceRaw, isInMiles));
     }
 
     public MutableLiveData<Boolean> getStartEnabled() {
@@ -86,7 +97,7 @@ public class MainViewModel extends ViewModel {
         super.onCleared();
     }
 
-    public void clear(){
+    public void clear() {
         mTimeText.setValue("");
         mDistanceText.setValue("");
     }

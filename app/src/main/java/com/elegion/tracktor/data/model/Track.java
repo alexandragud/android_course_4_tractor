@@ -147,12 +147,12 @@ public class Track extends RealmObject {
                 '}';
     }
 
-    public String getTrackInfo() {
+    public String getTrackInfo(boolean isInMiles) {
         return String.format("Дата: %s\nВремя: %s\nРасстояние: %s\nСредняя скорость: %s\nДеятельность: %s\nКалории: %s\nКомментарий: %s",
                 StringUtil.getDateText(getDate()),
                 StringUtil.getTimeText(getDuration()),
-                StringUtil.getDistanceText(getDistance()),
-                StringUtil.getSpeedText(getSpeed()),
+                StringUtil.getDistanceText(getDistance(), isInMiles),
+                StringUtil.getSpeedText(getSpeed(), isInMiles),
                 getActivityType().getName(),
                 StringUtil.getCaloriesText(getCalories()),
                 StringUtil.getComment(getComment()));

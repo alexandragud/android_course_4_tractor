@@ -51,12 +51,12 @@ public class ResultHolder extends RecyclerView.ViewHolder {
         mSendButton = mView.findViewById(R.id.send_button);
     }
 
-    public void bind(Track track) {
+    public void bind(Track track, boolean isDistanceInMiles) {
         mTrackId = track.getId();
         mDateText.setText(StringUtil.getDateText(track.getDate()));
-        mDistanceText.setText(StringUtil.getDistanceText(track.getDistance()));
+        mDistanceText.setText(StringUtil.getDistanceText(track.getDistance(), isDistanceInMiles));
         mTimeText.setText(StringUtil.getTimeText(track.getDuration()));
-        mSpeedText.setText(StringUtil.getSpeedText(track.getSpeed()));
+        mSpeedText.setText(StringUtil.getSpeedText(track.getSpeed(), isDistanceInMiles));
         mCaloriesText.setText(StringUtil.getCaloriesText(track.getCalories()));
         mActivityTypeText.setText(track.getActivityType().getName());
         mCommentText.setText(StringUtil.getComment(track.getComment()));
@@ -71,9 +71,9 @@ public class ResultHolder extends RecyclerView.ViewHolder {
 
         mView.setOnClickListener(v -> EventBus.getDefault().post(new GetTrackResultEvent(mTrackId)));
 
-        mEditCommentButton.setOnClickListener(v-> EventBus.getDefault().post(new ShowCommentDialogEvent(track)));
+        mEditCommentButton.setOnClickListener(v -> EventBus.getDefault().post(new ShowCommentDialogEvent(track)));
 
-        mSendButton.setOnClickListener(v-> EventBus.getDefault().post(new ShareTrackInfoEvent(track)));
+        mSendButton.setOnClickListener(v -> EventBus.getDefault().post(new ShareTrackInfoEvent(track)));
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ResultHolder extends RecyclerView.ViewHolder {
         return super.toString() + " '" + mDistanceText.getText() + "'";
     }
 
-    private void updateExpandedView(boolean isExpanded){
+    private void updateExpandedView(boolean isExpanded) {
         if (!isExpanded) {
             mExpandedView.setVisibility(View.GONE);
             mExpandButton.setImageResource(R.drawable.ic_expand_more);

@@ -26,6 +26,7 @@ import com.elegion.tracktor.event.ShareTrackInfoEvent;
 import com.elegion.tracktor.event.ShowCommentDialogEvent;
 import com.elegion.tracktor.event.UpdateTrackEvent;
 import com.elegion.tracktor.util.CaloriesUtil;
+import com.elegion.tracktor.util.DistanceConverter;
 import com.elegion.tracktor.util.StringUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -106,6 +107,7 @@ public class ResultsDetailsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         mViewModel.setPersonBMR(CaloriesUtil.getBmrFromPrefs(getContext()));
+        mViewModel.isDistanceInMiles(DistanceConverter.isDistanceInMiles(getContext()));
         mActivityList.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, mViewModel.getAllActivities()));
         mViewModel.selectTrack(getArguments().getLong(ResultsActivity.RESULT_KEY, 0));
         mViewModel.getSelectedDistanceText().observe(getViewLifecycleOwner(), s -> mDistanceText.setText(s));

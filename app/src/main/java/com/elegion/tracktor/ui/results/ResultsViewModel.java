@@ -40,10 +40,12 @@ public class ResultsViewModel extends ViewModel {
 
     private boolean isAscendingSorted;
     private String sortedField;
+    private boolean isInMiles;
 
     public ResultsViewModel() {
         isAscendingSorted = true;
         sortedField = SortType.BY_DATE.getFieldName();
+        isInMiles = false;
     }
 
     public void loadTracks() {
@@ -61,9 +63,9 @@ public class ResultsViewModel extends ViewModel {
     public void loadSelectedTrack() {
         Track track = mRepository.getItem(selectedTrackId);
         mSelectedTimeText.postValue(StringUtil.getTimeText(track.getDuration()));
-        mSelectedDistanceText.postValue(StringUtil.getDistanceText(track.getDistance()));
+        mSelectedDistanceText.postValue(StringUtil.getDistanceText(track.getDistance(), isInMiles));
         mSelectedImage.postValue(ScreenshotMaker.fromBase64(track.getImageBase64()));
-        mSelectedSpeed.postValue(StringUtil.getSpeedText(track.getSpeed()));
+        mSelectedSpeed.postValue(StringUtil.getSpeedText(track.getSpeed(), isInMiles));
         mSelectedDate.postValue(StringUtil.getDateText(track.getDate()));
         mSelectedActivity.postValue(track.getActivityType());
         mSelectedComment.postValue(track.getComment());
@@ -116,6 +118,10 @@ public class ResultsViewModel extends ViewModel {
     public void changeSortDirection(boolean isAscending) {
         isAscendingSorted = isAscending;
         loadTracks();
+    }
+
+    public void isDistanceInMiles(boolean value) {
+        isInMiles = value;
     }
 
     public void changeSortType(SortType type) {

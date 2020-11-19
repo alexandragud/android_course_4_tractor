@@ -21,6 +21,7 @@ import com.elegion.tracktor.data.model.Track;
 import com.elegion.tracktor.event.ShareTrackInfoEvent;
 import com.elegion.tracktor.event.ShowCommentDialogEvent;
 import com.elegion.tracktor.event.UpdateTrackEvent;
+import com.elegion.tracktor.util.DistanceConverter;
 import com.elegion.tracktor.util.ScreenshotMaker;
 
 import org.greenrobot.eventbus.EventBus;
@@ -91,7 +92,7 @@ public class ResultsActivity extends SingleFragmentActivity {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("image/jpeg");
             intent.putExtra(Intent.EXTRA_STREAM, uri);
-            intent.putExtra(Intent.EXTRA_TEXT, track.getTrackInfo());
+            intent.putExtra(Intent.EXTRA_TEXT, track.getTrackInfo(DistanceConverter.isDistanceInMiles(this)));
             startActivity(Intent.createChooser(intent, "Результаты маршрута"));
         } else {
             Toast.makeText(this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();

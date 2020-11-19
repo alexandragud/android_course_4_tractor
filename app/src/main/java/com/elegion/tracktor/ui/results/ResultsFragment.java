@@ -23,6 +23,7 @@ import com.elegion.tracktor.di.ViewModelModule;
 import com.elegion.tracktor.event.DeleteTrackEvent;
 import com.elegion.tracktor.event.GetTrackResultEvent;
 import com.elegion.tracktor.event.UpdateTrackEvent;
+import com.elegion.tracktor.util.DistanceConverter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -136,7 +137,7 @@ public class ResultsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAdapter = new ResultsAdapter();
+        mAdapter = new ResultsAdapter(DistanceConverter.isDistanceInMiles(getContext()));
         mViewModel.getTracks().observe(getViewLifecycleOwner(), this::showData);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mAdapter);

@@ -18,6 +18,7 @@ import com.elegion.tracktor.R;
 import com.elegion.tracktor.di.ViewModelModule;
 import com.elegion.tracktor.event.StartBtnClickedEvent;
 import com.elegion.tracktor.event.StopBtnClickedEvent;
+import com.elegion.tracktor.util.DistanceConverter;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -49,6 +50,12 @@ public class CounterFragment extends Fragment {
         Scope scope = Toothpick.openScopes(App.class, CounterFragment.class)
                 .installModules(new ViewModelModule(this));
         Toothpick.inject(this, scope);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mViewModel.isDistanceInMiles(DistanceConverter.isDistanceInMiles(getContext()));
     }
 
     @Nullable
