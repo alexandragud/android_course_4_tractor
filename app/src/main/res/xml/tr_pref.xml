@@ -1,56 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/title_activity_preference">
 
-    <ListPreference
-        android:dialogTitle="@string/dialog_title_distance_unit"
-        android:entries="@array/entries_list_preference_unit"
-        android:entryValues="@array/entryvalues_list_preference_unit"
-        android:key="@string/pref_key_unit"
-        android:title="@string/title_distance_unit"
-        android:defaultValue="@string/pref_default_value_unit"/>
+    <PreferenceCategory android:title="@string/title_user_preferences">
 
-    <ListPreference
-        android:dialogTitle="@string/dialog_title_auto_shutdown"
-        android:entries="@array/entries_list_preference_shutdown"
-        android:entryValues="@array/entryvalues_list_preference_shutdown"
-        android:key="@string/pref_key_shutdown"
-        android:title="@string/title_auto_shutdown"
-        android:defaultValue="@string/pref_default_value_shutdown"/>
+        <ListPreference
+            android:defaultValue="@string/pref_default_value_gender"
+            android:dialogTitle="@string/dialog_title_user_gender"
+            android:entries="@array/entries_list_preference_gender"
+            android:entryValues="@array/entryvalues_list_preference_gender"
+            android:key="@string/pref_key_gender"
+            android:title="@string/title_user_gender" />
 
-    <ListPreference
-        android:dialogTitle="@string/dialog_title_user_gender"
-        android:entries="@array/entries_list_preference_gender"
-        android:entryValues="@array/entryvalues_list_preference_gender"
-        android:key="@string/pref_key_gender"
-        android:title="@string/title_user_gender"
-        android:defaultValue="@string/pref_default_value_gender"/>
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_value_age"
+            android:dialogTitle="@string/dialog_title_user_age"
+            android:digits="0123456789"
+            android:inputType="numberDecimal"
+            android:key="@string/pref_key_age"
+            android:lines="1"
+            android:title="@string/title_user_age" />
 
-    <EditTextPreference
-        android:dialogTitle="@string/dialog_title_user_age"
-        android:key="@string/pref_key_age"
-        android:title="@string/title_user_age"
-        android:defaultValue="@string/pref_default_value_age"
-        android:inputType="numberDecimal"
-        android:lines="1"
-        android:digits="0123456789"/>
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_value_weight"
+            android:dialogTitle="@string/dialog_title_user_weight"
+            android:digits="0123456789"
+            android:inputType="numberDecimal"
+            android:key="@string/pref_key_weight"
+            android:lines="1"
+            android:title="@string/title_user_weight" />
 
-    <EditTextPreference
-        android:dialogTitle="@string/dialog_title_user_weight"
-        android:key="@string/pref_key_weight"
-        android:title="@string/title_user_weight"
-        android:defaultValue="@string/pref_default_value_weight"
-        android:inputType="numberDecimal"
-        android:lines="1"
-        android:digits="0123456789"/>
+        <EditTextPreference
+            android:defaultValue="@string/pref_default_value_height"
+            android:dialogTitle="@string/dialog_title_user_height"
+            android:digits="0123456789"
+            android:inputType="numberDecimal"
+            android:key="@string/pref_key_height"
+            android:lines="1"
+            android:title="@string/title_user_height" />
 
-    <EditTextPreference
-        android:dialogTitle="@string/dialog_title_user_height"
-        android:key="@string/pref_key_height"
-        android:title="@string/title_user_height"
-        android:defaultValue="@string/pref_default_value_height"
-        android:inputType="numberDecimal"
-        android:lines="1"
-        android:digits="0123456789"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/title_app_preferences">
+
+        <ListPreference
+            android:defaultValue="@string/pref_default_value_unit"
+            android:dialogTitle="@string/dialog_title_distance_unit"
+            android:entries="@array/entries_list_preference_unit"
+            android:entryValues="@array/entryvalues_list_preference_unit"
+            android:key="@string/pref_key_unit"
+            android:title="@string/title_distance_unit" />
+
+        <ListPreference
+            android:defaultValue="@string/pref_default_value_shutdown"
+            android:dialogTitle="@string/dialog_title_auto_shutdown"
+            android:entries="@array/entries_list_preference_shutdown"
+            android:entryValues="@array/entryvalues_list_preference_shutdown"
+            android:key="@string/pref_key_shutdown"
+            android:title="@string/title_auto_shutdown" />
+
+        <ListPreference
+            android:defaultValue="@string/pref_default_value_compression"
+            android:dialogTitle="@string/dialog_title_compression_ratio"
+            android:entries="@array/entries_list_preference_compression"
+            android:entryValues="@array/entryvalues_list_preference_compression"
+            android:key="@string/pref_key_compression"
+            android:title="@string/title_compression_ratio" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_key_track_preferences"
+        android:title="@string/title_track_preferences">
+
+        <SeekBarPreference
+            android:defaultValue="@string/pref_default_value_line_width"
+            android:key="@string/pref_key_line_width"
+            android:max="@integer/pref_max_value_line_width"
+            android:title="@string/title_line_width"
+            app:min="@integer/pref_min_value_line_width" />
+
+        <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
+            android:defaultValue="0xFF0277BD"
+            android:key="@string/pref_key_line_color"
+            android:title="@string/title_line_color"
+            app:cpv_dialogType="preset"
+            app:cpv_colorPresets="@array/entries_list_preference_color"
+            app:cpv_colorShape="circle"
+            app:cpv_previewSize="regular"
+            app:cpv_allowCustom="false"
+            app:cpv_showColorShades="false"/>
+
+
+        <com.elegion.tracktor.ui.preferences.IconPickerPreference
+            android:title="@string/title_icon_start"
+            app:icon_entryValues="@array/entries_list_preference_start_icon"
+            android:key="@string/pref_key_icon_start"
+            app:defaultValue="@drawable/ic_icon_start_pizza"
+            />
+
+        <com.elegion.tracktor.ui.preferences.IconPickerPreference
+            android:title="@string/title_icon_stop"
+            app:icon_entryValues="@array/entries_list_preference_stop_icon"
+            android:key="@string/pref_key_icon_stop"
+            app:defaultValue="@drawable/ic_icon_stop_pizza"
+            />
+
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

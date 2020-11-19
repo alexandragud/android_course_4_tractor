@@ -14,18 +14,37 @@ public class StringUtil {
     }
 
     public static String getDistanceText(double value) {
-        return round(value, 0) + " м.";
+        return getDistanceText(value, 0, "м.");
     }
 
-    public static String getDateText(Date date){
+    public static String getDistanceText(double valueInMeters, boolean isInMiles) {
+        if (isInMiles) {
+            return DistanceConverter.getInFeetOrMiles(valueInMeters);
+        }
+        return DistanceConverter.getInMetersOrKM(valueInMeters);
+    }
+
+
+    public static String getDistanceText(double value, int places, String unit) {
+        return round(value, places) + " " + unit;
+    }
+
+    public static String getDateText(Date date) {
         return new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(date);
     }
 
-    public static String getSpeedText(double value){
+    public static String getSpeedText(double value) {
         return round(value, 1) + " м/с";
     }
 
-    public static String getCaloriesText(double value){
+    public static String getSpeedText(double valueInMetersPerSec, boolean isInMiles) {
+        if (isInMiles) {
+            return DistanceConverter.getSpeedInMilesPerHour(valueInMetersPerSec);
+        }
+        return getSpeedText(valueInMetersPerSec);
+    }
+
+    public static String getCaloriesText(double value) {
         return round(value, 0) + " ккал";
     }
 
@@ -34,8 +53,8 @@ public class StringUtil {
     }
 
     public static String getComment(String comment) {
-            if (comment == null || comment.isEmpty())
-                return "Введите комментарий";
-           return comment;
+        if (comment == null || comment.isEmpty())
+            return "Введите комментарий";
+        return comment;
     }
 }

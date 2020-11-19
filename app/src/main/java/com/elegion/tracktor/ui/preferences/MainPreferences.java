@@ -11,6 +11,7 @@ import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SeekBarPreference;
 
 import com.elegion.tracktor.App;
 import com.elegion.tracktor.R;
@@ -53,6 +54,8 @@ public class MainPreferences extends PreferenceFragmentCompat implements SharedP
         setSummaryFor(findPreference(getString(R.string.pref_key_gender)));
         setSummaryFor(findPreference(getString(R.string.pref_key_age)));
         setSummaryFor(findPreference(getString(R.string.pref_key_height)));
+        setSummaryFor(findPreference(getString(R.string.pref_key_compression)));
+        setSummaryFor(findPreference(getString(R.string.pref_key_line_width)));
     }
 
     @Override
@@ -98,6 +101,8 @@ public class MainPreferences extends PreferenceFragmentCompat implements SharedP
             preference.setSummary(((ListPreference) preference).getEntry());
         else if (preference instanceof EditTextPreference)
             preference.setSummary(((EditTextPreference) preference).getText());
+        else if (preference instanceof SeekBarPreference)
+            preference.setSummary(Integer.toString(((SeekBarPreference) preference).getValue()));
         else
             Log.d(TAG, "check preferences type");
     }

@@ -16,33 +16,58 @@
     <string name="end">Конец</string>
     <string name="begin">Начало</string>
 
+    <!-- preferences-->
     <string name="title_activity_preference">Настройки</string>
+    <string name="title_app_preferences">Настройки приложения</string>
     <string name="title_distance_unit">Единица измерения</string>
-    <string name="dialog_title_distance_unit">Выберите единицу измерения</string>
     <string name="title_auto_shutdown">Автоотключение</string>
-    <string name="dialog_title_auto_shutdown">Выберите время автоотключения</string>
-    <string name="title_user_weight">Вес пользователя</string>
-    <string name="dialog_title_user_weight">Вес пользователя</string>
-    <string name="title_user_gender">Пол пользователя</string>
-    <string name="dialog_title_user_gender">Выберите пол пользователя</string>
-    <string name="title_user_height">Рост пользователя</string>
-    <string name="dialog_title_user_height">Рост пользователя (см)</string>
-    <string name="title_user_age">Возраст пользователя</string>
-    <string name="dialog_title_user_age">Возраст пользователя</string>
+    <string name="title_compression_ratio">Степень сжатия скриншотов</string>
 
+    <string name="title_user_preferences">Данные пользователя</string>
+    <string name="title_user_weight">Вес пользователя</string>
+    <string name="title_user_gender">Пол пользователя</string>
+    <string name="title_user_height">Рост пользователя</string>
+    <string name="title_user_age">Возраст пользователя</string>
+
+    <string name="title_track_preferences">Настройки маршрута</string>
+    <string name="title_line_width">Ширина линии маршрута</string>
+    <string name="title_line_color">Цвет линии маршрута</string>
+    <string name="title_icon_start">Иконка Старт</string>
+    <string name="title_icon_stop">Иконка Стоп</string>
+
+    <!-- preferences dialogs-->
+    <string name="dialog_title_distance_unit">Выберите единицу измерения</string>
+    <string name="dialog_title_auto_shutdown">Выберите время автоотключения</string>
+    <string name="dialog_title_user_weight">Вес пользователя</string>
+    <string name="dialog_title_user_gender">Выберите пол пользователя</string>
+    <string name="dialog_title_user_height">Рост пользователя (см)</string>
+    <string name="dialog_title_user_age">Возраст пользователя</string>
+    <string name="dialog_title_compression_ratio">Выберите степень сжатия скриншотов</string>
+
+    <!-- preferences keys-->
     <string name="pref_key_unit">unit</string>
     <string name="pref_key_shutdown">shutdown</string>
     <string name="pref_key_weight">weight</string>
     <string name="pref_key_gender">gender</string>
     <string name="pref_key_height">height</string>
     <string name="pref_key_age">age</string>
+    <string name="pref_key_compression">compression</string>
+    <string name="pref_key_track_preferences">track</string>
+    <string name="pref_key_line_width">linewidth</string>
+    <string name="pref_key_line_color">color</string>
+    <string name="pref_key_icon_start">starticon</string>
+    <string name="pref_key_icon_stop">stopicon</string>
+
+    <!-- preferences default values-->
     <string name="pref_default_value_unit">1</string>
     <string name="pref_default_value_shutdown">-1</string>
     <string name="pref_default_value_weight">60</string>
     <string name="pref_default_value_gender">1</string>
     <string name="pref_default_value_height">170</string>
     <string name="pref_default_value_age">18</string>
-    <string name="btn_delete_result">Удалить</string>
+    <string name="pref_default_value_compression">25</string>
+    <string name="pref_default_value_line_width">10</string>
+   <string name="pref_default_value_line_color">0xFF0277BD</string>
 
     <string name="dont_stay">Не стойте на месте!</string>
     <string name="back_off">Приложение не может работать без доступа к местоположению</string>
@@ -54,6 +79,7 @@
     <string name="stopRoute">Закончить маршрут</string>
     <string name="notify_info">Время: %s\nРасстояние: %s "</string>
     <string name="delete">Удалить</string>
+    <string name="btn_delete_result">Удалить</string>
     <string name="comment">Введите комментарий</string>
     <string name="comment_title">Введите комментарий</string>
     <string name="comment_button_ok">Сохранить</string>
