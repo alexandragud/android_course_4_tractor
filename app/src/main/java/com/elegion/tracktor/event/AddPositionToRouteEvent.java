@@ -2,7 +2,7 @@ package com.elegion.tracktor.event;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class AddPositionToRouteEvent {
+public class AddPositionToRouteEvent extends NewPositionEvent  {
 
     private LatLng mLastPosition;
     private LatLng mNewPosition;

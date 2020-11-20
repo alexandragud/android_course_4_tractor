@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.os.IBinder;
 import android.widget.Toast;
 
@@ -14,27 +13,19 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.elegion.tracktor.R;
-import com.elegion.tracktor.event.AddPositionToRouteEvent;
 import com.elegion.tracktor.event.GetRouteEvent;
-import com.elegion.tracktor.event.StartTrackEvent;
 import com.elegion.tracktor.event.StopBtnClickedEvent;
-import com.elegion.tracktor.event.StopTrackEvent;
-import com.elegion.tracktor.event.UpdateRouteEvent;
 import com.elegion.tracktor.event.UpdateTimerEvent;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.SphericalUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -51,53 +42,29 @@ public class CounterService extends Service {
     public static final int UPDATE_FASTEST_INTERVAL = 5_000;
     public static final int UPDATE_MIN_DISTANCE = 20;
 
-    private double mDistance;
     private Disposable mTimerDisposable;
-    private List<LatLng> mRoute = new ArrayList<>();
-    private Location mLastLocation;
-    private LatLng mLastPosition;
     private Long mShutdownDuration;
 
     private NotificationHelper mNotificationHelper;
+    private TrackHelper mTrackHelper;
     private FusedLocationProviderClient mLocationProviderClient;
 
     private LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             if (locationResult != null) {
-                if (isFirstPoint()) {
-                    addPointToRoute(locationResult.getLastLocation());
-                    EventBus.getDefault().post(new StartTrackEvent(mLastPosition));
-                } else {
-                    Location newLocation = locationResult.getLastLocation();
-                    LatLng newPosition = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
-                    if (positionChanged(newPosition)) {
-                        mRoute.add(newPosition);
-                        LatLng prevPosition = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                        mDistance += SphericalUtil.computeDistanceBetween(prevPosition, newPosition);
-                        EventBus.getDefault().post(new AddPositionToRouteEvent(prevPosition, newPosition, mDistance));
-                    }
-                    mLastLocation = newLocation;
-                    mLastPosition = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                }
+                mTrackHelper.addLocationToRoute(locationResult.getLastLocation());
+                EventBus.getDefault().post(mTrackHelper.getNewPositionEvent());
             }
         }
     };
 
-    private boolean positionChanged(LatLng position) {
-        return mLastLocation.getLongitude() != position.longitude || mLastLocation.getLatitude() != position.latitude;
-    }
-
-    private void addPointToRoute(Location location) {
-        mLastLocation = location;
-        mLastPosition = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        mRoute.add(mLastPosition);
-    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         EventBus.getDefault().register(this);
+        mTrackHelper = new TrackHelper();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
             mNotificationHelper = new NotificationHelper(this);
             Notification notification = mNotificationHelper.showNotification();
@@ -127,9 +94,9 @@ public class CounterService extends Service {
     }
 
     private void onTimerUpdate(long totalSeconds) {
-        EventBus.getDefault().post(new UpdateTimerEvent(totalSeconds, mDistance));
-        mNotificationHelper.updateNotification(totalSeconds, mDistance);
-        if (mShutdownDuration!=-1 && totalSeconds==mShutdownDuration){
+        EventBus.getDefault().post(new UpdateTimerEvent(totalSeconds, mTrackHelper.getDistance()));
+        mNotificationHelper.updateNotification(totalSeconds, mTrackHelper.getDistance());
+        if (mShutdownDuration != -1 && totalSeconds == mShutdownDuration) {
             EventBus.getDefault().post(new StopBtnClickedEvent());
         }
     }
@@ -140,13 +107,9 @@ public class CounterService extends Service {
         return null;
     }
 
-    private boolean isFirstPoint() {
-        return mRoute.size() == 0 && mLastLocation == null && mLastPosition == null;
-    }
-
     @Override
     public void onDestroy() {
-        EventBus.getDefault().post(new StopTrackEvent(mRoute));
+        EventBus.getDefault().post(mTrackHelper.getStopTrackEvent());
         mLocationProviderClient.removeLocationUpdates(mLocationCallback);
         mTimerDisposable.dispose();
         stopForeground(true);
@@ -155,7 +118,7 @@ public class CounterService extends Service {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetRoute(GetRouteEvent event) {
-        EventBus.getDefault().post(new UpdateRouteEvent(mRoute, mDistance));
+        EventBus.getDefault().post(mTrackHelper.getUpdateRouteEvent());
     }
 }
 

@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class StartTrackEvent {
+public class StartTrackEvent extends NewPositionEvent {
 
     private LatLng mStartPosition;
 

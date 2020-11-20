@@ -27,7 +27,7 @@ public class NotificationHelper {
 
     private NotificationCompat.Builder mNotificationBuilder;
     private NotificationManager mNotificationManager;
-    private Context mContext;
+    private final Context mContext;
 
     public NotificationHelper(Context context) {
         mContext = context;
