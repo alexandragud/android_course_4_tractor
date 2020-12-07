@@ -24,6 +24,8 @@ public class NotificationHelper {
     public static final String CHANNEL_NAME = "Counter Service";
     public static final int NOTIFICATION_ID = 101;
     public static final int REQUEST_CODE_LAUNCH = 0;
+    public static final int REQUEST_CODE_STOP = 1;
+    public static final String ACTION_STOP = "com.elegion.tracktor.service.STOP";
 
     private NotificationCompat.Builder mNotificationBuilder;
     private NotificationManager mNotificationManager;
@@ -69,6 +71,10 @@ public class NotificationHelper {
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, REQUEST_CODE_LAUNCH,
                 notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        PendingIntent stopPendingIntent = PendingIntent.getActivity(mContext, REQUEST_CODE_STOP,
+                stopIntent(), PendingIntent.FLAG_CANCEL_CURRENT);
+
         mNotificationBuilder = new NotificationCompat.Builder(mContext, CHANNEL_ID)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
@@ -76,7 +82,16 @@ public class NotificationHelper {
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle(mContext.getString(R.string.route_active))
                 .setVibrate(new long[]{0})
-                .setColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+                .setColor(ContextCompat.getColor(mContext, R.color.colorAccent))
+                .addAction(R.drawable.ic_stop, mContext.getString(R.string.stop), stopPendingIntent);
+    }
+
+    public Intent stopIntent() {
+        Intent stopIntent = new Intent(mContext, MainActivity.class);
+        stopIntent.setAction(ACTION_STOP)
+                .addCategory(Intent.CATEGORY_LAUNCHER)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        return stopIntent;
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

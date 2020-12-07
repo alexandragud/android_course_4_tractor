@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -19,7 +20,9 @@ import androidx.core.content.ContextCompat;
 import com.elegion.tracktor.R;
 import com.elegion.tracktor.event.StartBtnClickedEvent;
 import com.elegion.tracktor.event.StopBtnClickedEvent;
+import com.elegion.tracktor.event.StopCountEvent;
 import com.elegion.tracktor.service.CounterService;
+import com.elegion.tracktor.service.NotificationHelper;
 import com.elegion.tracktor.ui.preferences.PreferenceActivity;
 import com.elegion.tracktor.ui.results.ResultsActivity;
 
@@ -32,19 +35,21 @@ import static android.content.pm.PackageManager.PERMISSION_DENIED;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_LOCATION_STORAGE = 42;
+    private static final int REQUEST_ALERT_WINDOW = 43;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !Settings.canDrawOverlays(this)) {
+            showRequestRationaleForDisplayOnTopDialog();
+        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_DENIED
-        || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_DENIED) {
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PERMISSION_DENIED) {
             showRequestRationaleDialog();
         } else {
             configureMap();
         }
-
     }
 
     @Override
@@ -72,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void launchAboutScreen() {
         CustomTabsIntent intent = new CustomTabsIntent.Builder()
-                .setToolbarColor(ContextCompat.getColor(this,R.color.colorPrimary))
+                .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
                 .setShowTitle(true)
                 .enableUrlBarHiding()
                 .build();
@@ -94,7 +99,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Toast.makeText(this, "from notify", Toast.LENGTH_SHORT).show();
+        if (NotificationHelper.ACTION_STOP.equals(intent.getAction())) {
+            EventBus.getDefault().postSticky(new StopCountEvent());
+        } else {
+            Toast.makeText(this, "from notify", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -107,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN, priority = 3)
     public void onStopBtnClicked(StopBtnClickedEvent event) {
         stopService(getServiceIntent());
     }
@@ -129,6 +138,20 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void showRequestRationaleForDisplayOnTopDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.permissions_request_title)
+                .setMessage(R.string.permissions_request_alert_message)
+                .setPositiveButton(R.string.ok, ((dialog, which) -> {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, REQUEST_ALERT_WINDOW);
+                }))
+                .create()
+                .show();
+
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_LOCATION_STORAGE) {
@@ -148,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private TrackMapFragment getTrackMapFragment() {
-         return (TrackMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        return (TrackMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
     }
 
 

@@ -38,13 +38,7 @@ public class MainViewModel extends ViewModel {
         isInMiles = false;
     }
 
-    public void switchButtons() {
-        startEnabled.setValue(!startEnabled.getValue());
-        stopEnabled.setValue(!stopEnabled.getValue());
-
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onUpdateTimer(UpdateTimerEvent event) {
         mTimeText.postValue(StringUtil.getTimeText(event.getSeconds()));
         mDistanceText.postValue(StringUtil.getDistanceText(event.getDistance(), isInMiles));
@@ -58,7 +52,16 @@ public class MainViewModel extends ViewModel {
         mDistanceText.postValue(StringUtil.getDistanceText(mDistanceRaw, isInMiles));
         startEnabled.postValue(false);
         stopEnabled.postValue(true);
+    }
 
+    public void onStopCount() {
+        startEnabled.postValue(true);
+        stopEnabled.postValue(false);
+    }
+
+    public void onStartCount() {
+        startEnabled.postValue(false);
+        stopEnabled.postValue(true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

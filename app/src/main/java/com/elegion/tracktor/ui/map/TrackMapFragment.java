@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,8 +20,10 @@ import com.elegion.tracktor.di.ViewModelModule;
 import com.elegion.tracktor.event.AddPositionToRouteEvent;
 import com.elegion.tracktor.event.GetRouteEvent;
 import com.elegion.tracktor.event.StartTrackEvent;
+import com.elegion.tracktor.event.StopCountEvent;
 import com.elegion.tracktor.event.StopTrackEvent;
 import com.elegion.tracktor.event.UpdateRouteEvent;
+import com.elegion.tracktor.service.NotificationHelper;
 import com.elegion.tracktor.ui.results.ResultsActivity;
 import com.elegion.tracktor.util.DistanceConverter;
 import com.elegion.tracktor.util.ScreenshotMaker;
@@ -82,7 +86,8 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
         super.onResume();
         mMainViewModel.isDistanceInMiles(DistanceConverter.isDistanceInMiles(getContext()));
         EventBus.getDefault().register(this);
-        EventBus.getDefault().post(new GetRouteEvent());
+        if (mMap != null)
+            EventBus.getDefault().post(new GetRouteEvent());
     }
 
     @Override
@@ -108,6 +113,7 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMapLoadedCallback(this::initMap);
+        EventBus.getDefault().post(new GetRouteEvent());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -124,6 +130,12 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
         mMap.addPolyline(new PolylineOptions().addAll(route).color(getRouteColor()).width(getRouteWidth()));
         addMarker(route.get(0), getString(R.string.start), getIconStartId());
         zoomRoute(route);
+        if (NotificationHelper.ACTION_STOP.equals(getActivity().getIntent().getAction())) {
+            new Handler(Looper.getMainLooper())
+                    .postDelayed(
+                            () -> EventBus.getDefault().postSticky(new StopCountEvent()),
+                            1000);
+        }
     }
 
     private void addMarker(LatLng position, String text, int iconResourceId) {

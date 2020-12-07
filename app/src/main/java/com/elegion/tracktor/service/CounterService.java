@@ -14,7 +14,6 @@ import androidx.preference.PreferenceManager;
 
 import com.elegion.tracktor.R;
 import com.elegion.tracktor.event.GetRouteEvent;
-import com.elegion.tracktor.event.StopBtnClickedEvent;
 import com.elegion.tracktor.event.UpdateTimerEvent;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -80,7 +79,8 @@ public class CounterService extends Service {
             startTimer();
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            mShutdownDuration = Long.valueOf(preferences.getString(getString(R.string.pref_key_shutdown), "-1"));
+            mShutdownDuration = Long.valueOf(preferences.getString(getString(R.string.pref_key_shutdown),
+                    getString(R.string.pref_default_value_shutdown)));
         } else {
             Toast.makeText(this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
         }
@@ -94,10 +94,10 @@ public class CounterService extends Service {
     }
 
     private void onTimerUpdate(long totalSeconds) {
-        EventBus.getDefault().post(new UpdateTimerEvent(totalSeconds, mTrackHelper.getDistance()));
+        EventBus.getDefault().postSticky(new UpdateTimerEvent(totalSeconds, mTrackHelper.getDistance()));
         mNotificationHelper.updateNotification(totalSeconds, mTrackHelper.getDistance());
         if (mShutdownDuration != -1 && totalSeconds == mShutdownDuration) {
-            EventBus.getDefault().post(new StopBtnClickedEvent());
+            startActivity(mNotificationHelper.stopIntent());
         }
     }
 
@@ -116,7 +116,7 @@ public class CounterService extends Service {
         EventBus.getDefault().unregister(this);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onGetRoute(GetRouteEvent event) {
         EventBus.getDefault().post(mTrackHelper.getUpdateRouteEvent());
     }

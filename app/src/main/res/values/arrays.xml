@@ -12,6 +12,7 @@
 
     <string-array name="entries_list_preference_shutdown">
         <item>Никогда</item>
+        <item>10 секунд</item>
         <item>10 минут</item>
         <item>30 минут</item>
         <item>60 минут</item>
@@ -19,6 +20,7 @@
 
     <string-array name="entryvalues_list_preference_shutdown">
         <item>-1</item>
+        <item>10</item>
         <item>600</item>
         <item>1800</item>
         <item>3600</item>

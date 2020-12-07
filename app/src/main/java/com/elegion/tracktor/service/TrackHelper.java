@@ -18,7 +18,7 @@ public class TrackHelper {
     private final List<LatLng> mRoute = new ArrayList<>();
     private Location mLastLocation;
     private LatLng mLastPosition;
-    private double mDistance;
+    private double mDistance = 0;
     private NewPositionEvent event;
 
     public void addLocationToRoute(Location location) {
@@ -36,16 +36,6 @@ public class TrackHelper {
         }
         mLastLocation = location;
         mLastPosition = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-    }
-
-    private void addPointToRoute(Location location) {
-        mLastLocation = location;
-        mLastPosition = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        mRoute.add(mLastPosition);
-    }
-
-    public boolean isFirstPoint() {
-        return mRoute.size() == 0 && mLastLocation == null && mLastPosition == null;
     }
 
     private boolean isRouteEmpty() {
@@ -75,7 +65,6 @@ public class TrackHelper {
     public UpdateRouteEvent getUpdateRouteEvent() {
         return new UpdateRouteEvent(mRoute, mDistance);
     }
-
 
     public double getDistance() {
         return mDistance;

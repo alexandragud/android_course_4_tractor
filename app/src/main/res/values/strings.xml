@@ -9,6 +9,7 @@
     <string name="commentLabel">Комментарий:</string>
     <string name="start">Старт</string>
     <string name="stop">Стоп</string>
+    <string name="open">Открыть</string>
     <string name="statistic">Статистика</string>
     <string name="settings">Настройки</string>
     <string name="menu_item_about">О приложении</string>
@@ -60,7 +61,7 @@
 
     <!-- preferences default values-->
     <string name="pref_default_value_unit">1</string>
-    <string name="pref_default_value_shutdown">-1</string>
+    <string name="pref_default_value_shutdown">10</string>
     <string name="pref_default_value_weight">60</string>
     <string name="pref_default_value_gender">1</string>
     <string name="pref_default_value_height">170</string>
@@ -73,11 +74,13 @@
     <string name="back_off">Приложение не может работать без доступа к местоположению</string>
     <string name="permissions_request_title">Внимание!</string>
     <string name="permissions_request_message">Для корректной работы приложения необходим доступ к местоположению. Для сохранения скриншотов необходим доступ к внешнему хранилищу</string>
+    <string name="permissions_request_alert_message">Для корректной работы приложения необходимо разрешение запуска приложения поверх остальных приложений.</string>
     <string name="ok">Понятно</string>
     <string name="permissions_denied">Вы не дали разрешения!</string>
     <string name="route_active">Маршрут активен!</string>
     <string name="stopRoute">Закончить маршрут</string>
     <string name="notify_info">Время: %s\nРасстояние: %s "</string>
+    <string name="stop_notify_info">Маршрут завершен. Время: %s\nРасстояние: %s "</string>
     <string name="delete">Удалить</string>
     <string name="btn_delete_result">Удалить</string>
     <string name="comment">Введите комментарий</string>

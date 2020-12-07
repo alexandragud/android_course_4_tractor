@@ -18,9 +18,12 @@ import com.elegion.tracktor.R;
 import com.elegion.tracktor.di.ViewModelModule;
 import com.elegion.tracktor.event.StartBtnClickedEvent;
 import com.elegion.tracktor.event.StopBtnClickedEvent;
+import com.elegion.tracktor.event.StopCountEvent;
 import com.elegion.tracktor.util.DistanceConverter;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
@@ -56,6 +59,13 @@ public class CounterFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mViewModel.isDistanceInMiles(DistanceConverter.isDistanceInMiles(getContext()));
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
     }
 
     @Nullable
@@ -79,19 +89,25 @@ public class CounterFragment extends Fragment {
     @OnClick(R.id.buttonStart)
     void onStartClick() {
         EventBus.getDefault().post(new StartBtnClickedEvent());
-        mViewModel.switchButtons();
+        mViewModel.onStartCount();
         mViewModel.clear();
     }
 
     @OnClick(R.id.buttonStop)
     void onStopClick() {
         EventBus.getDefault().post(new StopBtnClickedEvent());
-        mViewModel.switchButtons();
+        mViewModel.onStopCount();
     }
 
     @Override
     public void onDetach() {
         Toothpick.closeScope(CounterFragment.class);
         super.onDetach();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onStopCount(StopCountEvent event) {
+        mViewModel.onStopCount();
+        EventBus.getDefault().post(new StopBtnClickedEvent());
     }
 }
