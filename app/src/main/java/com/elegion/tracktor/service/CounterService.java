@@ -14,6 +14,7 @@ import androidx.preference.PreferenceManager;
 
 import com.elegion.tracktor.R;
 import com.elegion.tracktor.event.GetRouteEvent;
+import com.elegion.tracktor.event.StopCountEvent;
 import com.elegion.tracktor.event.UpdateTimerEvent;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -109,6 +110,7 @@ public class CounterService extends Service {
 
     @Override
     public void onDestroy() {
+        EventBus.getDefault().removeStickyEvent(StopCountEvent.class);
         EventBus.getDefault().post(mTrackHelper.getStopTrackEvent());
         mLocationProviderClient.removeLocationUpdates(mLocationCallback);
         mTimerDisposable.dispose();
@@ -116,7 +118,7 @@ public class CounterService extends Service {
         EventBus.getDefault().unregister(this);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGetRoute(GetRouteEvent event) {
         EventBus.getDefault().post(mTrackHelper.getUpdateRouteEvent());
     }

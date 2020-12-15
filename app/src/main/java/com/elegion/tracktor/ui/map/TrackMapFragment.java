@@ -106,20 +106,26 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
             mMap.setOnMyLocationButtonClickListener(this);
             mMap.setOnMyLocationClickListener(this);
             mMap.setMyLocationEnabled(true);
+            new Handler(Looper.getMainLooper())
+                    .postDelayed(
+                            () ->  EventBus.getDefault().post(new GetRouteEvent()),
+                            1000);
         }
+
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMapLoadedCallback(this::initMap);
-        EventBus.getDefault().post(new GetRouteEvent());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAddPositionToRoute(AddPositionToRouteEvent event) {
-        mMap.addPolyline(new PolylineOptions().add(event.getLastPosition(), event.getNewPosition()).color(getRouteColor()).width(getRouteWidth()));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(event.getNewPosition(), DEFAULT_ZOOM));
+        if (mMap!=null) {
+            mMap.addPolyline(new PolylineOptions().add(event.getLastPosition(), event.getNewPosition()).color(getRouteColor()).width(getRouteWidth()));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(event.getNewPosition(), DEFAULT_ZOOM));
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -134,7 +140,7 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
             new Handler(Looper.getMainLooper())
                     .postDelayed(
                             () -> EventBus.getDefault().postSticky(new StopCountEvent()),
-                            1000);
+                            2000);
         }
     }
 
@@ -167,8 +173,10 @@ public class TrackMapFragment extends SupportMapFragment implements OnMapReadyCa
             for (LatLng point : route) {
                 builder.include(point);
             }
+            int width = getResources().getDisplayMetrics().widthPixels;
+            int height = getResources().getDisplayMetrics().heightPixels;
             int padding = 100;
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(), padding);
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(builder.build(),width, height, padding);
             mMap.moveCamera(cu);
         }
     }
