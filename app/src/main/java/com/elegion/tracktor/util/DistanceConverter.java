@@ -9,16 +9,20 @@ import com.elegion.tracktor.R;
 
 public class DistanceConverter {
 
-    private static final int MILE_SIZE = 1609;
+    private static final double MILE_SIZE = 1609.34;
     private static final int KILOMETER_SIZE = 1000;
     private static final double FOOT_SIZE = 0.3048;
 
     public static boolean isDistanceInMiles(Context context) {
+        if (context == null)
+            throw new NullPointerException("Context can't be null");
         SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return mPreferences.getString(context.getString(R.string.pref_key_unit), "1").equals("2");
     }
 
     public static String getInMetersOrKM(double valueInMeters) {
+        if (valueInMeters<0)
+            throw new IllegalArgumentException("Значение не может быть отрицательным");
         if (valueInMeters > KILOMETER_SIZE)
             return getInKM(valueInMeters);
         else

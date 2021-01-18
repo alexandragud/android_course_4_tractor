@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.Observer;
 
 import com.elegion.tracktor.data.RealmRepository;
+import com.elegion.tracktor.data.SortType;
 import com.elegion.tracktor.data.model.Track;
 
 import org.junit.Before;
@@ -51,7 +52,9 @@ public class ResultsViewModelTest {
     public void setUp() throws Exception {
         mTracks = new ArrayList<>();
         mTracks.add(new Track());
-        when(mRepository.getAll()).thenReturn(mTracks);
+        boolean isAscendingSorted = true;
+        String sortedField = SortType.BY_DATE.getFieldName();
+        when(mRepository.getAllWithSort(sortedField, isAscendingSorted)).thenReturn(mTracks);
         mViewModel = new ResultsViewModel();
         mViewModel.getTracks().observeForever(observer);
         mToothPickRule.inject(mViewModel);

@@ -61,7 +61,7 @@
 
     <!-- preferences default values-->
     <string name="pref_default_value_unit">1</string>
-    <string name="pref_default_value_shutdown">10</string>
+    <string name="pref_default_value_shutdown">-1</string>
     <string name="pref_default_value_weight">60</string>
     <string name="pref_default_value_gender">1</string>
     <string name="pref_default_value_height">170</string>
